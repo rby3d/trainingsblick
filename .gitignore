@@ -1,0 +1,13 @@
+# Python-Umgebung (legt "Strava Dashboard starten.cmd" beim ersten Start an)
+.venv/
+__pycache__/
+*.pyc
+
+# Oberfläche: Pakete zum Bauen (web/index.html ist der fertige Build und gehört ins Repo)
+ui/node_modules/
+
+# Eigene Daten liegen nicht hier, sondern in %APPDATA%\StravaDashboard; zur Sicherheit trotzdem ausschließen
+config/
+.cache/
+*.secrets.json
+*.mp3
