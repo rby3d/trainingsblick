@@ -127,11 +127,15 @@ export function Einrichtung({ z, gz, einst, aktion, speichern, onClose }: {
       <div className="ob" role="dialog" aria-label="Einrichtung">
         <aside className="ob-seite">
           <div className="logo">Strava<small>Einrichtung</small></div>
-          {SCHRITTE.map(([sy, t, u], k) => (
-            <button key={t} className={`ob-schritt${k === i ? " jetzt" : k < i ? " fertig" : ""}`} onClick={() => setI(k)}>
-              <SymFeld n={k < i ? "haken" : sy} /><span>{t}<small>{u}</small></span>
-            </button>
-          ))}
+          {SCHRITTE.map(([sy, t, u], k) => {
+            // Haken nur, wenn es wirklich erledigt ist (übersprungenes Strava/Garmin bleibt ohne)
+            const erledigt = k === 0 ? verbunden : k === 1 ? gz.verbunden && !gz.anmelden : k < i;
+            return (
+              <button key={t} className={`ob-schritt${k === i ? " jetzt" : erledigt ? " fertig" : ""}`} onClick={() => setI(k)}>
+                <SymFeld n={erledigt && k !== i ? "haken" : sy} /><span>{t}<small>{u}</small></span>
+              </button>
+            );
+          })}
         </aside>
         <div className="ob-inhalt">{inhalt}</div>
       </div>

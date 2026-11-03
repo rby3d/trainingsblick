@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 """Garmin-Connect-Helfer: laeuft mit einem neuen Python (>= 3.12), weil `garminconnect` das verlangt.
 
-Das Strava-Dashboard (Python 3.7) startet dieses Skript als Unterprozess und liest nur dessen Ausgabe:
+Das Strava-Dashboard startet dieses Skript als Unterprozess und liest nur dessen Ausgabe:
 je Zeile ein JSON-Objekt  {"ereignis": ...}  auf stdout.
 
   pruefen                          -> {"ereignis":"pruefen","ok":bool,"version":"...","fehler":"..."}
-  login  --tokens ORDNER           -> erwartet auf stdin {"email","passwort"}; sendet ggf. {"ereignis":"mfa"} und
-                                      wartet dann auf eine stdin-Zeile {"code":"123456"}; Ende: "fertig" oder "fehler"
-  sync   --tokens ORDNER --cache DATEI [--tage N] [--ab YYYY-MM-DD]
-                                   -> holt Tageswerte (Schlaf, HRV, Ruhepuls, Body Battery, Stress, Schritte,
-                                      Trainingsbereitschaft) und VO2max, schreibt sie nach DATEI
+  login                            -> erwartet auf stdin {"email","passwort"}; sendet ggf. {"ereignis":"mfa"} und
+                                      wartet dann auf eine stdin-Zeile {"code":"123456"}; sendet {"ereignis":"tokens","daten":"..."},
+                                      Ende: "fertig" oder "fehler"
+  sync   --cache DATEI [--tage N] [--ab YYYY-MM-DD]
+                                   -> erwartet auf stdin {"tokens":"..."}; holt Tageswerte (Schlaf, HRV, Ruhepuls, Body Battery,
+                                      Stress, Schritte, Trainingsbereitschaft) und VO2max, schreibt sie nach DATEI und sendet am
+                                      Ende den (ggf. erneuerten) Zugang als {"ereignis":"tokens"}
 
-Zugangsdaten werden nie auf die Platte geschrieben; gespeichert wird nur das Token von garminconnect in ORDNER.
+Hier wird nichts Geheimes auf die Platte geschrieben: Passwort und Zugang gehen nur ueber stdin/stdout. Das Dashboard
+speichert den Zugang verschluesselt (lib/tresor.py).
 """
 from __future__ import annotations
 
@@ -21,6 +24,9 @@ import json
 import os
 import sys
 import time
+
+# garminconnect nimmt ohne Angabe den Pfad aus GARMINTOKENS und schreibt den Zugang dann im Klartext dorthin
+os.environ.pop("GARMINTOKENS", None)
 
 
 def sende(**kw):
@@ -35,8 +41,12 @@ def lies_zeile():
     return json.loads(z)
 
 
-def pfad(p):
-    return os.path.expanduser(p) if p else os.path.join(os.path.expanduser("~"), ".garminconnect")
+def zugang_senden(client):
+    """Aktuellen Zugang (nach Anmeldung oder Erneuerung) ans Dashboard geben; der Text ist JSON von garminconnect."""
+    try:
+        sende(ereignis="tokens", daten=client.client.dumps())
+    except Exception:    # noqa: BLE001  ohne neuen Zugang bleibt der alte gespeichert
+        pass
 
 
 def g(d, *ks, std=None):
@@ -97,7 +107,8 @@ def cmd_login(a):
             sende(ereignis="mfa")
             return str(lies_zeile().get("code", "")).strip()
         client = Garmin(zd.get("email"), zd.get("passwort"), prompt_mfa=mfa)
-        client.login(pfad(a.tokens))
+        client.login()
+        zugang_senden(client)
         sende(ereignis="fertig")
         return 0
     except Exception as e:    # noqa: BLE001
@@ -206,8 +217,12 @@ def cmd_sync(a):
         sende(ereignis="fehler", text="garminconnect fehlt: %s" % e)
         return 1
     try:
+        tokens = str(lies_zeile().get("tokens") or "")
+        if not tokens.strip().startswith("{"):
+            raise RuntimeError("Authentication: kein gespeicherter Zugang")
         client = Garmin()
-        client.login(pfad(a.tokens))
+        client.login(tokens)
+        zugang_senden(client)          # beim Anmelden ggf. schon erneuert
     except Exception as e:    # noqa: BLE001
         sende(ereignis="fehler", text=fehlertext(e), anmelden=True)
         return 1
@@ -244,10 +259,12 @@ def cmd_sync(a):
     except Exception as e:    # noqa: BLE001
         cache["stand"] = time.time()
         speichere_cache(a.cache, cache)
+        zugang_senden(client)
         sende(ereignis="fehler", text=fehlertext(e))
         return 1
     cache["stand"] = time.time()
     speichere_cache(a.cache, cache)
+    zugang_senden(client)
     sende(ereignis="fertig", tage=len(cache["tage"]))
     return 0
 
@@ -256,10 +273,8 @@ def main():
     ap = argparse.ArgumentParser()
     sp = ap.add_subparsers(dest="cmd", required=True)
     sp.add_parser("pruefen")
-    p = sp.add_parser("login")
-    p.add_argument("--tokens", default="")
+    sp.add_parser("login")
     p = sp.add_parser("sync")
-    p.add_argument("--tokens", default="")
     p.add_argument("--cache", required=True)
     p.add_argument("--tage", type=int, default=120)
     p.add_argument("--ab", default="")

@@ -2,11 +2,12 @@
 """
 Strava-Zugang: Zugangsdaten laden/speichern, Anmeldung im Browser (OAuth) und API-Abrufe.
 
-Die Zugangsdaten (Client ID, Client Secret, Tokens) liegen in <DATEN>\\config\\strava.secrets.json und verlassen den PC nie.
+Die Zugangsdaten (Client ID, Client Secret, Tokens) liegen verschluesselt im Tresor (lib/tresor.py, Name "strava") und verlassen
+den PC nie.
 Anmeldung: Strava leitet nach der Bestaetigung auf http://localhost:8123/callback zurueck; deshalb muss in der eigenen
 Strava-API-App als "Authorization Callback Domain" localhost eingetragen sein.
 
-Optional "formkurve_url" in der Datei: dann holt das Dashboard den Access-Token von einem Formkurve-Server, der den Zugang
+Optional "formkurve_url" im Tresor-Eintrag: dann holt das Dashboard den Access-Token von einem Formkurve-Server, der den Zugang
 verwaltet (sonst erneuern zwei Programme denselben Refresh-Token und machen sich gegenseitig ungueltig). Fuer alle anderen leer.
 """
 from __future__ import annotations
@@ -20,8 +21,9 @@ import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import orte
+import tresor
 
-SECRETS_PATH = orte.CONFIG / "strava.secrets.json"
+ALT_KLARTEXT = orte.CONFIG / "strava.secrets.json"     # fruehere Versionen; wird beim Laden uebernommen und geloescht
 OAUTH_PORT = 8123
 REDIRECT_URI = "http://localhost:%d/callback" % OAUTH_PORT
 API = "https://www.strava.com/api/v3"
@@ -31,23 +33,23 @@ class StravaError(Exception):
     pass
 
 
+def _alt_lesen(text):
+    j = json.loads(text)
+    return j if isinstance(j, dict) and (j.get("refresh_token") or j.get("client_secret")) else None
+
+
 def load_config():
     cfg = {"client_id": "", "client_secret": "", "refresh_token": "", "access_token": "", "expires_at": 0, "formkurve_url": ""}
-    try:
-        cfg.update(json.loads(SECRETS_PATH.read_text(encoding="utf-8")))
-    except (OSError, ValueError):
-        pass
+    tresor.uebernehmen("strava", ALT_KLARTEXT, _alt_lesen)
+    cfg.update(tresor.lesen("strava") or {})
     return cfg
 
 
 def save_config(cfg):
     try:
-        SECRETS_PATH.parent.mkdir(parents=True, exist_ok=True)
-        tmp = SECRETS_PATH.with_suffix(".tmp")
-        tmp.write_text(json.dumps(cfg, indent=2, ensure_ascii=False), encoding="utf-8")
-        tmp.replace(SECRETS_PATH)
-    except OSError:
-        pass
+        tresor.schreiben("strava", cfg)
+    except OSError as e:
+        raise StravaError("Strava-Zugang ließ sich nicht verschlüsselt speichern: %s" % e)
 
 
 def _http(req):

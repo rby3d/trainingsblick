@@ -73,7 +73,7 @@ Das Dashboard lädt jetzt deine Aktivitäten. Die neuesten siehst du nach wenige
 Bestzeiten, Runden und Wetter füllen sich über die nächsten Stunden bis Tage nach (Strava erlaubt nur eine begrenzte Zahl
 an Abrufen pro Viertelstunde und Tag).
 
-> **Wichtig:** Client Secret und die Zugangsdaten bleiben auf deinem PC. Gib sie niemandem weiter.
+> **Wichtig:** Client Secret und Zugangsdaten bleiben verschlüsselt auf deinem PC (siehe „Sicherheit“). Gib sie niemandem weiter.
 
 ### Schritt 4: Garmin (optional)
 
@@ -82,8 +82,13 @@ Wenn du eine Garmin-Uhr hast, kannst du Schlaf, HRV, Ruhepuls und mehr anzeigen 
 1. In der Einrichtung (oder später unter **Körperdaten**) **E-Mail und Passwort von Garmin Connect** eingeben
 2. Wenn Garmin einen **Bestätigungscode** schickt (per E-Mail oder App), diesen eintragen
 
-Das Passwort wird nicht gespeichert, nur ein Zugangs-Schlüssel von Garmin (im Ordner `.garminconnect` in deinem Benutzerordner).
+Das Passwort wird nicht gespeichert, nur ein Zugangs-Schlüssel von Garmin, und der verschlüsselt (siehe „Sicherheit“).
 Ohne Garmin fehlt nur der Bereich Körperdaten, alles andere funktioniert.
+
+> **Gut zu wissen:** Garmin bietet für so etwas keinen offiziellen Zugang. Das Programm nutzt das freie Paket
+> [garminconnect](https://github.com/cyberjunky/python-garminconnect), das sich wie die Garmin-Connect-Webseite anmeldet.
+> Garmin kann das jederzeit ändern (dann geht der Abruf eine Weile nicht, bis es ein Update gibt) oder bei zu vielen
+> Anmeldungen kurz sperren. Wer das nicht möchte, lässt Garmin einfach weg.
 
 ### Schritt 5: Ziel (optional)
 
@@ -120,18 +125,39 @@ Mit Git geht es so: `git pull` im Programmordner, danach einmal die Startdatei.
 
 ## Wo liegen meine Daten?
 
-Alles Persönliche liegt in **`%APPDATA%\StravaDashboard`**
+Einstellungen und geladene Daten liegen in **`%APPDATA%\StravaDashboard`**
 (im Explorer oben in die Adresszeile `%APPDATA%\StravaDashboard` eintippen und Enter drücken):
 
 | Ordner | Inhalt |
 |---|---|
-| `config\strava.secrets.json` | Strava-Zugang (Client ID, Secret, Tokens). **Nicht weitergeben.** |
-| `config\strava_dashboard.json` | Einstellungen (Puls, Ziele, Designs, Fenstergröße) |
+| `config\strava_dashboard.json` | Einstellungen (Puls, Ziele, Designs, Fenstergröße), nichts Geheimes |
 | `cache\` | geladene Aktivitäten, Bestzeiten, Runden, Wetter, Garmin-Daten. Darf gelöscht werden, wird dann neu geladen. |
 | `logs\` | Fehlerberichte, falls das Programm abstürzt |
 | `ton\` | eigene Sounds für die Videos (optional, siehe unten) |
 
+Die **Zugangsdaten** (Strava und Garmin) liegen getrennt davon verschlüsselt in **`%LOCALAPPDATA%\StravaDashboard\geheim`**.
+
 Bilder und Videos speicherst du, wohin du willst (Vorschlag: `Bilder\Strava Dashboard`).
+
+---
+
+## Sicherheit
+
+- **Passwörter** (Strava, Garmin) gibt das Programm nie ein und speichert sie nie. Bei Strava meldest du dich im Browser auf
+  strava.com an, bei Garmin geht das Passwort nur einmal direkt an Garmin.
+- **Zugangsdaten** (Strava: Client Secret und Tokens, Garmin: Zugangs-Schlüssel) werden mit der Windows-Verschlüsselung
+  **DPAPI** gespeichert, demselben Verfahren, mit dem Edge und Chrome deine Passwörter schützen. Die Dateien lassen sich nur
+  unter deinem Windows-Konto auf diesem PC öffnen. Ein Backup, ein kopierter Ordner oder ein anderes Benutzerkonto können
+  damit nichts anfangen.
+- Zugangsdaten liegen **nirgends im Klartext** auf der Platte. Ältere Versionen haben sie als Datei abgelegt
+  (`%APPDATA%\StravaDashboard\config\strava.secrets.json`, `%USERPROFILE%\.garminconnect\garmin_tokens.json`); beim ersten
+  Start übernimmt das Programm sie verschlüsselt und löscht die alten Dateien.
+- Was DPAPI **nicht** verhindert (das kann kein Programm, auch kein Browser): Schadsoftware, die unter deinem eigenen
+  Windows-Konto läuft. Halte Windows und deinen Virenschutz aktuell.
+- Der Strava-Zugang darf nur **lesen** (deine Aktivitäten). Der Garmin-Schlüssel ist dagegen eine volle Anmeldung an deinem
+  Garmin-Konto, deshalb ist er besonders geschützt. Du kannst ihn jederzeit unter **Körperdaten → Trennen** löschen.
+- Das Programm ist nur auf deinem eigenen PC erreichbar (`127.0.0.1` mit Zufalls-Schlüssel), nicht aus dem Netzwerk.
+- Zugriff widerrufen: Strava unter <https://www.strava.com/settings/apps>, Garmin durch Ändern des Passworts.
 
 **Was wird ins Internet geschickt?**
 - An **Strava**: nur Abrufe deiner eigenen Aktivitäten
@@ -175,7 +201,7 @@ Hilft das alles nicht: den neuesten Bericht aus `%APPDATA%\StravaDashboard\logs`
 
 1. Programmordner löschen
 2. `%APPDATA%\StravaDashboard` löschen (deine Einstellungen und Daten)
-3. Optional: `%LOCALAPPDATA%\StravaDashboard` (Fensterprofil) und den Ordner `.garminconnect` in deinem Benutzerordner löschen
+3. `%LOCALAPPDATA%\StravaDashboard` löschen (verschlüsselte Zugangsdaten und Fensterprofil)
 4. Optional: auf <https://www.strava.com/settings/apps> den Zugriff von „Mein Dashboard“ widerrufen und die API-App löschen
 
 ---
@@ -186,9 +212,11 @@ Hilft das alles nicht: den neuesten Bericht aus `%APPDATA%\StravaDashboard\logs`
 strava_dashboard.py            Einstieg: Server mit RPC-Funktionen, Fenster (lib/webshell.py)
 lib/strava_api.py              Strava-Anmeldung (OAuth, Callback localhost:8123) und Abrufe
 lib/strava_dashboard_logik.py  Aktivitäten holen und zwischenspeichern, Bestzeiten/Runden/Wetter im Hintergrund, Demo-Daten
-lib/garmin_logik.py            Garmin Connect; Abruf in lib/garmin_helfer.py (Paket garminconnect, Python ≥ 3.12)
+lib/garmin_logik.py            Garmin Connect; Abruf in lib/garmin_helfer.py (Paket garminconnect, Python ≥ 3.12),
+                               der Zugang geht nur über stdin/stdout an den Helfer, nie als Datei
 lib/ablage.py                  Speichern-Dialoge, Ordner öffnen
 lib/orte.py                    Datenordner (%APPDATA%\StravaDashboard, abweichend per STRAVA_DASHBOARD_DATEN)
+lib/tresor.py                  Zugangsdaten verschlüsselt (DPAPI) in %LOCALAPPDATA%\StravaDashboard\geheim
 ui/                            Oberfläche: React + TypeScript + Vite
 web/index.html                 fertiger Build der Oberfläche (eine Datei, mit eingecheckt)
 ```

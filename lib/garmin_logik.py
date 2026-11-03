@@ -1,7 +1,9 @@
-"""Garmin-Anbindung fuers Strava-Dashboard (laeuft mit dem alten Python 3.7).
+"""Garmin-Anbindung fuers Strava-Dashboard.
 
-Der eigentliche Abruf steckt in lib/garmin_helfer.py und wird mit einem neuen Python (>= 3.12) als Unterprozess gestartet.
+Der eigentliche Abruf steckt in lib/garmin_helfer.py und wird mit einem Python >= 3.12 als Unterprozess gestartet.
 Hier: Python finden, Paket pruefen/installieren, Anmeldung (inkl. Zwei-Faktor), Abruf im Hintergrund, Cache lesen.
+Der Zugang liegt nur verschluesselt im Tresor; eine Klartext-Datei frueherer Versionen (~/.garminconnect) wird uebernommen
+und geloescht.
 """
 from __future__ import annotations
 
@@ -18,6 +20,7 @@ import time
 from pathlib import Path
 
 import orte  # noqa: E402
+import tresor  # noqa: E402
 
 SCRIPT_DIR = orte.PROGRAMM
 HELFER = SCRIPT_DIR / "lib" / "garmin_helfer.py"
@@ -30,8 +33,34 @@ def _flags():
     return 0x08000000 if os.name == "nt" else 0      # CREATE_NO_WINDOW
 
 
-def _tokens_ordner(cfg):
-    return os.path.expanduser(cfg.get("garmin_tokens") or os.path.join("~", ".garminconnect"))
+TRESOR = "garmin"       # Zugang (Token von garminconnect) verschluesselt im Tresor, nie als Datei im Klartext
+
+
+def _tokens():
+    return (tresor.lesen(TRESOR) or {}).get("tokens") or ""
+
+
+def _alt_lesen(text):
+    j = json.loads(text)
+    return {"tokens": text.strip()} if isinstance(j, dict) and j.get("di_refresh_token") else None
+
+
+def alt_uebernehmen(cfg):
+    """Fruehere Versionen liessen garminconnect den Zugang im Klartext ablegen (cfg garmin_tokens oder ~/.garminconnect):
+    einmalig in den Tresor uebernehmen, Datei loeschen, leeren Ordner entfernen."""
+    ordner = Path(os.path.expanduser(cfg.get("garmin_tokens") or os.path.join("~", ".garminconnect")))
+    tresor.uebernehmen(TRESOR, ordner / "garmin_tokens.json", _alt_lesen)
+    try:
+        ordner.rmdir()          # nur, wenn nichts anderes mehr drin liegt
+    except OSError:
+        pass
+    cfg.pop("garmin_tokens", None)
+
+
+def _tokens_merken(j):
+    """Ereignis "tokens" vom Helfer: neuen bzw. erneuerten Zugang verschluesselt ablegen."""
+    if j.get("ereignis") == "tokens" and j.get("daten"):
+        tresor.schreiben(TRESOR, {"tokens": j["daten"]})
 
 
 def _py_version(exe):
@@ -99,10 +128,12 @@ class Garmin:
                   "mfa": False, "fertig": 0, "gesamt": 0, "anmelden": False}
         self.ver = 0
         self.letzte = collections.deque(maxlen=6)
+        if not demo:
+            alt_uebernehmen(cfg)
 
     # ---- Zustand
     def tokens_da(self):
-        return self.demo or os.path.isfile(os.path.join(_tokens_ordner(self.cfg), "garmin_tokens.json"))
+        return self.demo or tresor.vorhanden(TRESOR)
 
     def stand(self):
         try:
@@ -163,7 +194,9 @@ class Garmin:
                 return
         self._set(busy=True, art="install", text="Installiere garminconnect …", fehler=False)
         try:
-            r = subprocess.run([exe, "-m", "pip", "install", "--user", "--upgrade", "garminconnect", "curl_cffi"],
+            # in einer venv (Installation per Start-Datei) ohne --user, sonst ins Benutzerverzeichnis
+            venv = os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(exe)), "pyvenv.cfg"))
+            r = subprocess.run([exe, "-m", "pip", "install"] + ([] if venv else ["--user"]) + ["garminconnect==0.3.19"],
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=900, creationflags=_flags())
             aus = r.stdout.decode("utf-8", "replace").strip().splitlines()
             if r.returncode != 0:
@@ -216,12 +249,13 @@ class Garmin:
         self._set(busy=True, art="login", text="Melde bei Garmin an …", fehler=False, mfa=False, anmelden=False)
 
         def ereignis(j):
+            _tokens_merken(j)
             if j.get("ereignis") == "mfa":
                 self._set(mfa=True, text="Bestätigungscode eingeben")
 
         def lauf():
             try:
-                erg = self._starte(["login", "--tokens", _tokens_ordner(self.cfg)], [{"email": email, "passwort": passwort}], ereignis)
+                erg = self._starte(["login"], [{"email": email, "passwort": passwort}], ereignis)
             except Exception as e:    # noqa: BLE001
                 erg = {"ereignis": "fehler", "text": str(e)}
             if erg.get("ereignis") == "fertig":
@@ -243,10 +277,7 @@ class Garmin:
         self._set(mfa=False, text="Prüfe Code …")
 
     def trennen(self):
-        try:
-            os.remove(os.path.join(_tokens_ordner(self.cfg), "garmin_tokens.json"))
-        except OSError:
-            pass
+        tresor.loeschen(TRESOR)
         self._set(text="", fehler=False, anmelden=False)
 
     # ---- Abruf
@@ -261,6 +292,7 @@ class Garmin:
         self._set(busy=True, art="sync", text="Lade Garmin-Daten …", fehler=False, fertig=0, gesamt=0, anmelden=False)
 
         def ereignis(j):
+            _tokens_merken(j)
             e = j.get("ereignis")
             if e == "start":
                 self._set(gesamt=int(j.get("gesamt") or 0))
@@ -271,11 +303,11 @@ class Garmin:
                     self.stossen()
 
         def lauf():
-            argumente = ["sync", "--tokens", _tokens_ordner(self.cfg), "--cache", str(CACHE), "--tage", "120"]
+            argumente = ["sync", "--cache", str(CACHE), "--tage", "120"]
             if voll:
                 argumente += ["--ab", (dt.date.today() - dt.timedelta(days=365)).isoformat()]
             try:
-                erg = self._starte(argumente, [], ereignis)
+                erg = self._starte(argumente, [{"tokens": _tokens()}], ereignis)
             except Exception as e:    # noqa: BLE001
                 erg = {"ereignis": "fehler", "text": str(e)}
             self.ver += 1

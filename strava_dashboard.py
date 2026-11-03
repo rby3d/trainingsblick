@@ -8,14 +8,15 @@ Ohne Fenster:   python strava_dashboard.py --kein-fenster [--demo] [--port N] [-
 --demo:         erfundene Trainingsdaten, kein Strava-Zugriff (zum Ausprobieren)
 
 Aufbau: Python startet einen lokalen Webserver (nur 127.0.0.1, mit Token) und oeffnet die Oberflaeche (web/index.html, gebaut
-aus ui/) als App-Fenster von Edge/Chrome. Alle Daten (Einstellungen, Strava-Zugang, Zwischenspeicher) liegen in
-%APPDATA%\\StravaDashboard (lib/orte.py), nie im Programmordner.
+aus ui/) als App-Fenster von Edge/Chrome. Einstellungen und Zwischenspeicher liegen in %APPDATA%\\StravaDashboard,
+die Zugangsdaten verschluesselt in %LOCALAPPDATA%\\StravaDashboard\\geheim (lib/orte.py), nie im Programmordner.
   lib/strava_api.py            Strava-Anmeldung und Abrufe
+  lib/tresor.py                 Zugangsdaten (Strava, Garmin) verschluesselt per Windows-DPAPI
   lib/strava_dashboard_logik.py Aktivitaeten holen und zwischenspeichern, Bestzeiten/Runden/Wetter im Hintergrund, Demo-Daten
   lib/garmin_logik.py           Garmin Connect (Abruf in lib/garmin_helfer.py mit dem Paket garminconnect)
   lib/ablage.py                 Speichern-Dialoge fuer Bilder und Videos
   lib/webshell.py               Server, Fenster, Heartbeat
-Sounds fuer die Videos: Dateien <name>.mp3 in %APPDATA%\\StravaDashboard\ton (optional); fehlen sie, erzeugt die Seite
+Sounds fuer die Videos: Dateien <name>.mp3 in %APPDATA%\\StravaDashboard\\ton (optional); fehlen sie, erzeugt die Seite
 die Effekte selbst. Musik gibt es nur als Datei (musik_lofi.mp3, musik_daytona.mp3).
 """
 from __future__ import annotations
