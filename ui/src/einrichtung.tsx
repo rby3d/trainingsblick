@@ -72,7 +72,7 @@ function StravaAnleitung({ cid, setCid, sec, setSec, aktion }: { cid: string; se
         <span className="ob-nr">2</span>
         <div className="grow">
           <b>Formular „My API Application“ ausfüllen</b>
-          <table className="ob-felder"><tbody>
+          <table className="ob-felder"><colgroup><col className="feld" /><col /><col className="knopf" /></colgroup><tbody>
             {FELDER.map(([feld, inhalt, wert, wichtig]) => (
               <tr key={feld} className={wichtig ? "wichtig" : ""}>
                 <td>{feld}</td>

@@ -592,18 +592,26 @@ tr.gewaehlt td { background: var(--sel); }
 .ob-sicher .sym { width: 15px; height: 15px; color: var(--ok); }
 .ob-fortschritt { display: grid; gap: 8px; }
 /* Strava-Schritt: drei Karten mit Nummer, Formular-Tabelle mit Kopier-Knöpfen */
-.ob-anleitung { display: grid; gap: 10px; min-width: 0; }
+/* minmax(0, 1fr): sonst wäre die Spalte mindestens so breit wie der längste nicht umbrechende Inhalt, und der Dialog schneidet rechts ab */
+.ob-anleitung { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; min-width: 0; }
 .ob-inhalt { grid-template-columns: minmax(0, 1fr); }
-.ob-karte { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface2); }
+.ob-karte { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface2); min-width: 0; }
+.ob-karte > .btn { flex: none; }
 .ob-karte > .grow { display: grid; gap: 6px; min-width: 0; }
 .ob-karte small { color: var(--muted); font-size: 12.5px; }
 .ob-karte .ob-form { margin-top: 4px; }
 .ob-karte .ob-form small.bad { color: var(--bad); }
 .ob-nr { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: #fc4c02; color: #fff; font-weight: 700; font-size: 13px; }
-.ob-felder { width: 100%; border-collapse: collapse; font-size: 13px; }
-.ob-felder td { padding: 5px 6px; border-top: 1px solid var(--line); vertical-align: middle; }
-.ob-felder td:first-child { color: var(--muted); white-space: nowrap; padding-left: 0; }
-.ob-felder td:last-child { text-align: right; padding-right: 0; width: 1%; white-space: nowrap; }
+/* feste Spaltenanteile: die Tabelle passt sich der Breite an, lange Feldnamen brechen um */
+.ob-felder { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+.ob-felder col.feld { width: 32%; }
+.ob-felder col.knopf { width: 108px; }
+/* allgemeine td-Regel (eine Zeile mit „…“) hier aufheben: alles soll lesbar bleiben */
+.ob-felder td { padding: 5px 6px; border-top: 1px solid var(--line); border-bottom: 0; vertical-align: middle; white-space: normal; overflow: visible;
+  text-overflow: clip; max-width: none; }
+.ob-felder code { white-space: nowrap; }
+.ob-felder td:first-child { color: var(--muted); padding-left: 0; }
+.ob-felder td:last-child { text-align: right; padding-right: 0; white-space: nowrap; }
 .ob-felder td small { display: block; }
 .ob-felder code { font: 12.5px var(--f-mono); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
 .ob-felder tr.wichtig td { background: var(--warn-soft); }
