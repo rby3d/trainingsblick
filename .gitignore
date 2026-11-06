@@ -11,3 +11,7 @@ config/
 .cache/
 *.secrets.json
 *.mp3
+
+# Installer: Zwischenstand und heruntergeladenes Python (installer/bauen.ps1)
+installer/build/
+installer/cache/

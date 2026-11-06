@@ -18,39 +18,32 @@ Alles läuft auf deinem eigenen PC. Deine Daten gehen an niemanden außer Strava
 - Einen PC mit **Windows 10 oder 11**
 - Ein **Strava-Konto**
 - Optional: ein **Garmin-Konto** (für die Körperdaten)
-- Etwa **15 Minuten** für die Einrichtung
+- Etwa **10 Minuten** für die Einrichtung
 
-Python (die Programmiersprache, in der das Programm geschrieben ist) brauchst du nicht selbst zu installieren: Das erledigt die Startdatei für dich.
+Sonst musst du nichts installieren: Das Programm bringt alles mit.
 
 ---
 
 ## Installation
 
-### Schritt 1: Herunterladen
+### Schritt 1: Installieren
 
-1. Öffne <https://github.com/tp-codings/strava_dashboard>
-2. Klicke oben rechts auf den grünen Knopf **„Code“** und dann auf **„Download ZIP“**
-3. Öffne deinen Ordner **Downloads**, klicke mit der rechten Maustaste auf `strava_dashboard-main.zip` und wähle **„Alle extrahieren …“**
-4. Verschiebe den entpackten Ordner an einen festen Ort, zum Beispiel nach **Dokumente**
-   (nicht nach „C:\Programme“, und nicht im Download-Ordner lassen, falls du den öfter aufräumst)
+1. Öffne <https://github.com/tp-codings/strava_dashboard/releases/latest>
+2. Klicke unten bei „Assets“ auf **`Strava-Dashboard-Setup-….exe`**, die Datei landet in deinem Ordner **Downloads**
+3. Doppelklicke die Datei
+4. Falls Windows warnt („Der Computer wurde durch Windows geschützt“): auf **„Weitere Informationen“** klicken, dann auf
+   **„Trotzdem ausführen“**. Das kommt, weil das Programm neu und nicht bei Microsoft registriert ist.
+5. Im Installer auf **„Installieren“** und am Ende auf **„Fertigstellen“** klicken. Adminrechte brauchst du nicht.
 
-### Schritt 2: Starten
+Das Dashboard öffnet sich in einem eigenen Fenster mit der **Einrichtung**. Später startest du es über das Startmenü
+oder die Verknüpfung **„Strava Dashboard“** auf dem Desktop.
 
-1. Öffne den Ordner und doppelklicke auf **`Strava Dashboard starten.cmd`**
-2. Falls Windows warnt („Der Computer wurde durch Windows geschützt“): auf **„Weitere Informationen“** klicken, dann auf **„Trotzdem ausführen“**
-3. Ein schwarzes Fenster richtet alles ein:
-   - Ist noch kein Python da, fragt es: *„Soll Python jetzt automatisch installiert werden [J,N]?“* → **J** drücken.
-     Danach das schwarze Fenster schließen und die Datei **noch einmal doppelklicken**.
-   - Beim ersten Mal dauert das 1–2 Minuten. Danach liegt auf dem Desktop eine Verknüpfung **„Strava Dashboard“**.
-4. Das Dashboard öffnet sich in einem eigenen Fenster mit der **Einrichtung**
+### Schritt 2: Mit Strava verbinden
 
-Ab jetzt startest du das Programm einfach über die Verknüpfung auf dem Desktop.
+Strava erlaubt Programmen nur Zugriff, wenn du dafür eine eigene, kostenlose „API-App“ anlegst. Das klingt technischer, als es ist,
+und die Einrichtung im Dashboard führt dich mit Kopier-Knöpfen durch jeden Schritt:
 
-### Schritt 3: Mit Strava verbinden
-
-Strava erlaubt Programmen nur Zugriff, wenn du dafür eine eigene, kostenlose „API-App“ anlegst. Das klingt technischer, als es ist:
-
-1. Melde dich im Browser bei Strava an und öffne <https://www.strava.com/settings/api>
+1. In der Einrichtung auf **„Strava öffnen“** klicken (oder <https://www.strava.com/settings/api> öffnen) und bei Strava anmelden
 2. Fülle das Formular so aus:
 
    | Feld | Was du einträgst |
@@ -63,7 +56,7 @@ Strava erlaubt Programmen nur Zugriff, wenn du dafür eine eigene, kostenlose �
    | **Authorization Callback Domain** | **`localhost`** (genau so, ohne http und ohne Schrägstrich) |
 
 3. Bestätige die Bedingungen und klicke auf **„Create“**.
-   Falls Strava nach einem Bild für die App fragt: irgendein Bild hochladen (zum Beispiel ein Foto vom Handy).
+   Falls Strava nach einem Bild für die App fragt: In der Einrichtung auf **„passendes Bild speichern …“** klicken und dieses Bild hochladen.
 4. Du siehst jetzt deine App mit **Client ID** (eine Zahl) und **Client Secret** (auf **„Show“** klicken, eine lange Buchstaben-Zahlen-Folge)
 5. Kopiere beide in die Einrichtung des Dashboards und klicke auf **„Mit Strava verbinden …“**
 6. Im Browser öffnet sich Strava. Lass den Haken bei **„Aktivitätsdaten ansehen“** (bzw. „View data about your activities“) gesetzt und klicke auf **„Autorisieren“**
@@ -75,7 +68,7 @@ an Abrufen pro Viertelstunde und Tag).
 
 > **Wichtig:** Client Secret und Zugangsdaten bleiben verschlüsselt auf deinem PC (siehe „Sicherheit“). Gib sie niemandem weiter.
 
-### Schritt 4: Garmin (optional)
+### Schritt 3: Garmin (optional)
 
 Wenn du eine Garmin-Uhr hast, kannst du Schlaf, HRV, Ruhepuls und mehr anzeigen lassen:
 
@@ -90,7 +83,7 @@ Ohne Garmin fehlt nur der Bereich Körperdaten, alles andere funktioniert.
 > Garmin kann das jederzeit ändern (dann geht der Abruf eine Weile nicht, bis es ein Update gibt) oder bei zu vielen
 > Anmeldungen kurz sperren. Wer das nicht möchte, lässt Garmin einfach weg.
 
-### Schritt 5: Ziel (optional)
+### Schritt 4: Ziel (optional)
 
 Trainierst du auf einen Wettkampf hin? Trag ihn mit Datum ein, dann zeigt die Übersicht den Countdown.
 Ein Wochenziel in Stunden ist auch möglich. Beides lässt sich später unter **Einstellungen …** ändern.
@@ -107,19 +100,19 @@ Ein Wochenziel in Stunden ist auch möglich. Beides lässt sich später unter **
 - Videos werden als normale MP4-Datei gespeichert (1080 Pixel breit, 30 Bilder pro Sekunde) und lassen sich direkt in
   Instagram, WhatsApp oder Schnittprogramme wie DaVinci Resolve laden.
 
-**Zum Ausprobieren ohne Strava:** `Demo starten.cmd` öffnet das Dashboard mit erfundenen Trainingsdaten.
+- Bilder und Videos speicherst du über den normalen Windows-Dialog, wohin du willst. Beim Video kommt nach dem Erstellen
+  der Knopf **„Speichern …“**.
 
 ---
 
 ## Update auf eine neue Version
 
-1. Neue Version wie in Schritt 1 herunterladen und entpacken
-2. Den alten Programmordner löschen und den neuen an dieselbe Stelle legen
-3. Einmal `Strava Dashboard starten.cmd` doppelklicken (richtet Python neu ein, 1–2 Minuten)
+Gibt es eine neue Version, zeigt das Dashboard links unten **„Neue Version … herunterladen“**.
+
+1. Darauf klicken: Die Download-Seite öffnet sich
+2. Die neue `Strava-Dashboard-Setup-….exe` herunterladen und doppelklicken (das Dashboard vorher schließen)
 
 Deine Einstellungen, der Strava-Zugang und die geladenen Daten bleiben dabei erhalten, denn sie liegen nicht im Programmordner (siehe unten).
-
-Mit Git geht es so: `git pull` im Programmordner, danach einmal die Startdatei.
 
 ---
 
@@ -164,6 +157,7 @@ Bilder und Videos speicherst du, wohin du willst (Vorschlag: `Bilder\Strava Dash
 - An **Open-Meteo** (kostenloser Wetterdienst): für das Wetter je Einheit nur das Datum und der Startort auf etwa 10 km gerundet
 - An **Garmin**: nur wenn du es verbindest, deine Anmeldung und der Abruf deiner Tageswerte
 - Kartenbilder kommen von **OpenStreetMap**
+- An **GitHub**: einmal je Start die Frage, ob es eine neue Version gibt (mit der Versionsnummer, sonst nichts)
 
 ---
 
@@ -180,15 +174,14 @@ Achte darauf, dass du die Sounds verwenden darfst.
 
 | Problem | Lösung |
 |---|---|
-| Doppelklick auf die Startdatei macht nichts / Fenster blitzt nur kurz auf | Rechtsklick auf `Strava Dashboard starten.cmd` → „Öffnen“. Bleibt das Fenster mit einer Meldung stehen, steht dort, was fehlt. |
-| „Python wurde nicht gefunden“ | Python 3.12 oder neuer von <https://www.python.org/downloads/> installieren, im Installer **„Add python.exe to PATH“** anhaken, danach die Startdatei erneut öffnen. |
-| Nach einem Python-Update startet nichts mehr | Im Programmordner den Ordner `.venv` löschen und die Startdatei erneut öffnen. |
+| „Der Computer wurde durch Windows geschützt“ beim Installieren | Auf **„Weitere Informationen“** und dann **„Trotzdem ausführen“** klicken. |
+| Der Virenschutz meldet die Setup-Datei | Kommt bei neuen, unsignierten Programmen vor. Nur die Datei von der Release-Seite oben verwenden. |
 | Strava: „Port 8123 ist belegt“ | Läuft das Dashboard zweimal? Alle Fenster schließen und neu starten. |
 | Strava: „redirect_uri invalid“ / „Bad Request“ | In der Strava-API-App muss bei **Authorization Callback Domain** genau `localhost` stehen. |
 | Strava: „Der Zugriff auf Aktivitäten wurde nicht freigegeben“ | Beim Verbinden den Haken bei „Aktivitätsdaten ansehen“ setzen. |
 | Strava antwortet mit „HTTP 429“ | Strava-Limit erreicht (zu viele Abrufe). Das Programm wartet von selbst und macht später weiter. |
 | Es fehlen alte Einheiten | Unter **Einstellungen …** auf **„Alles neu laden …“** klicken. |
-| Garmin: „Kein Python 3.12 oder neuer gefunden“ / Paket fehlt | Unter **Körperdaten** auf **„Garmin-Paket installieren“** klicken. |
+| Garmin: „Paket fehlt“ (nur beim Start aus dem Quellcode) | Unter **Körperdaten** auf **„Garmin-Paket installieren“** klicken. |
 | Garmin-Anmeldung klappt nicht | Daten auf <https://connect.garmin.com> prüfen. Ist Zwei-Faktor aktiv, den Code aus Mail/App eingeben. |
 | Video lässt sich nicht erstellen | Das Programm nutzt Microsoft Edge (oder Chrome) als Fenster. Edge aktualisieren. |
 | Das Fenster ist weg, das Programm läuft aber noch | Im Task-Manager „pythonw.exe“ beenden und neu starten. |
@@ -199,10 +192,10 @@ Hilft das alles nicht: den neuesten Bericht aus `%APPDATA%\StravaDashboard\logs`
 
 ## Deinstallieren
 
-1. Programmordner löschen
-2. `%APPDATA%\StravaDashboard` löschen (deine Einstellungen und Daten)
-3. `%LOCALAPPDATA%\StravaDashboard` löschen (verschlüsselte Zugangsdaten und Fensterprofil)
-4. Optional: auf <https://www.strava.com/settings/apps> den Zugriff von „Mein Dashboard“ widerrufen und die API-App löschen
+1. Windows-**Einstellungen → Apps → Installierte Apps**, „Strava Dashboard“ → **Deinstallieren**
+2. Die Frage, ob auch deine Daten und Zugänge gelöscht werden sollen, mit **„Ja“** beantworten
+   (sonst bleiben `%APPDATA%\StravaDashboard` und `%LOCALAPPDATA%\StravaDashboard` für eine spätere Neuinstallation liegen)
+3. Optional: auf <https://www.strava.com/settings/apps> den Zugriff von „Mein Dashboard“ widerrufen und die API-App löschen
 
 ---
 
@@ -214,12 +207,21 @@ lib/strava_api.py              Strava-Anmeldung (OAuth, Callback localhost:8123)
 lib/strava_dashboard_logik.py  Aktivitäten holen und zwischenspeichern, Bestzeiten/Runden/Wetter im Hintergrund, Demo-Daten
 lib/garmin_logik.py            Garmin Connect; Abruf in lib/garmin_helfer.py (Paket garminconnect, Python ≥ 3.12),
                                der Zugang geht nur über stdin/stdout an den Helfer, nie als Datei
-lib/ablage.py                  Speichern-Dialoge, Ordner öffnen
+lib/ablage.py                  Ordner öffnen; Speichern-Dialoge nur als Ersatzweg (normal speichert die Seite, ui/src/speichern.ts)
 lib/orte.py                    Datenordner (%APPDATA%\StravaDashboard, abweichend per STRAVA_DASHBOARD_DATEN)
 lib/tresor.py                  Zugangsdaten verschlüsselt (DPAPI) in %LOCALAPPDATA%\StravaDashboard\geheim
+lib/version.py, lib/update.py  Versionsnummer, Hinweis auf neue Releases
 ui/                            Oberfläche: React + TypeScript + Vite
 web/index.html                 fertiger Build der Oberfläche (eine Datei, mit eingecheckt)
+installer/                     Installer: bauen.ps1 (eingebettetes Python + Inno Setup), strava_dashboard.iss, symbol.py
+.github/workflows/release.yml  baut bei einem Tag v<Version> die Setup.exe und legt das Release an
 ```
+
+Aus dem Quellcode starten: `Strava Dashboard starten.cmd` (legt `.venv` an), zum Ausprobieren `Demo starten.cmd`.
+
+Neues Release: `VERSION` in `lib/version.py` erhöhen, committen, dann `git tag v1.2.0` und `git push origin v1.2.0`.
+Lokal bauen (braucht Python 3.12 und [Inno Setup 6](https://jrsoftware.org/isdl.php)):
+`powershell -ExecutionPolicy Bypass -File installer\bauen.ps1`
 
 Oberfläche bauen (Node.js 20 oder neuer):
 

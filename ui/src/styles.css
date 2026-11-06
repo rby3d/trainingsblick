@@ -350,6 +350,10 @@ tr.gewaehlt td { background: var(--sel); }
 .nb[aria-current=page] { background: var(--accent-soft); color: var(--accent); }
 .nb[aria-current=page] small { color: var(--accent); opacity: .75; }
 .nav-fuss { margin-top: auto; display: grid; gap: 4px; padding: 14px 0 0; border-top: 1px solid var(--line); }
+.nav-update { display: flex; gap: 10px; align-items: center; text-align: left; padding: 9px 10px; margin-bottom: 6px; border-radius: 10px; border: 1px solid var(--accent);
+  background: var(--accent-soft); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.nav-update small { display: block; font-weight: 400; color: var(--muted); font-size: 11.5px; }
+.nav-update .sym { color: var(--accent); flex: none; }
 .nav-stand { display: grid; gap: 4px; font-size: 12px; color: var(--muted); padding: 0 10px 8px; }
 .nav-stand span { display: flex; align-items: center; gap: 7px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .stand-pkt { width: 7px; height: 7px; border-radius: 50%; background: var(--line); flex: none; }
@@ -587,6 +591,25 @@ tr.gewaehlt td { background: var(--sel); }
 .ob-sicher { font-size: 12.5px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
 .ob-sicher .sym { width: 15px; height: 15px; color: var(--ok); }
 .ob-fortschritt { display: grid; gap: 8px; }
+/* Strava-Schritt: drei Karten mit Nummer, Formular-Tabelle mit Kopier-Knöpfen */
+.ob-anleitung { display: grid; gap: 10px; min-width: 0; }
+.ob-inhalt { grid-template-columns: minmax(0, 1fr); }
+.ob-karte { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface2); }
+.ob-karte > .grow { display: grid; gap: 6px; min-width: 0; }
+.ob-karte small { color: var(--muted); font-size: 12.5px; }
+.ob-karte .ob-form { margin-top: 4px; }
+.ob-karte .ob-form small.bad { color: var(--bad); }
+.ob-nr { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: #fc4c02; color: #fff; font-weight: 700; font-size: 13px; }
+.ob-felder { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ob-felder td { padding: 5px 6px; border-top: 1px solid var(--line); vertical-align: middle; }
+.ob-felder td:first-child { color: var(--muted); white-space: nowrap; padding-left: 0; }
+.ob-felder td:last-child { text-align: right; padding-right: 0; width: 1%; white-space: nowrap; }
+.ob-felder td small { display: block; }
+.ob-felder code { font: 12.5px var(--f-mono); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
+.ob-felder tr.wichtig td { background: var(--warn-soft); }
+.ob-felder tr.wichtig td:first-child { color: var(--ink); font-weight: 600; padding-left: 6px; }
+.ob-hinweis { color: var(--ok) !important; }
+.btn-link { border: 0; background: none; padding: 0; color: var(--accent); font: inherit; cursor: pointer; text-decoration: underline; }
 .ob-zeile { display: flex; align-items: center; gap: 10px; font-size: 13.5px; margin-top: 6px; }
 .ob-fortschritt .balken { overflow: hidden; }
 
@@ -608,6 +631,8 @@ tr.gewaehlt td { background: var(--sel); }
   .nav-fuss { margin: 0 0 0 auto; padding: 0; border: 0; display: flex; gap: 2px; }
   .nav-fuss .btn { font-size: 0; gap: 0; padding: 7px 8px; border-color: transparent; background: none; }
   .nav-fuss .btn .sym { width: 18px; height: 18px; }
+  .nav-update { margin: 0; padding: 7px 8px; }
+  .nav-update span { display: none; }
   .main { padding: 18px 16px 40px; }
   .raster { gap: 16px; }
   .raster > .s3, .raster > .s4, .raster > .s5, .raster > .s6 { grid-column: span 12; }

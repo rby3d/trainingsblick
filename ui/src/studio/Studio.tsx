@@ -1,9 +1,10 @@
 /* Share Studio im Dashboard, aufgebaut wie in Formkurve (frontend/src/ui/Teilen.tsx): eine Einheit gestalten (Einzeln),
    mehrere auf einem Bild (Sammelbild) oder als Video. Dazu die Schnellvorschau an der einzelnen Einheit.
-   Gezeichnet wird im Fenster (studio/teilenBild.ts, Kopie aus Formkurve); das Script legt die Dateien nur ab. */
+   Gezeichnet wird im Fenster (studio/teilenBild.ts, Kopie aus Formkurve), gespeichert auch (../speichern.ts). */
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { rpc, token } from "../api";
+import { rpc } from "../api";
+import { dateiWaehlen, ordnerWaehlen } from "../speichern";
 import { Seg } from "../komp";
 import { Auswahl } from "../auswahl";
 import { Modal } from "../ui";
@@ -70,16 +71,10 @@ function useEinzelBasis(): [TeilState | null, (s: TeilState) => void] {
 
 const dateiname = (s: string) => s.replace(/[\\/:*?"<>|]+/g, "").trim();
 const bildName = (d: TeilDaten, s: TeilState) => dateiname(d.datum.slice(0, 10) + " " + (s.texts.title.trim() || d.name)) + ".png";
-async function hochladen(gruppe: string, blob: Blob, name: string) {
-  const r = await fetch(`/hochladen?gruppe=${gruppe}&name=${encodeURIComponent(name)}&t=${encodeURIComponent(token())}`, { method: "POST", body: blob });
-  if (!r.ok) throw new Error("Datei konnte nicht übergeben werden");
-}
-/** Datei an das Script schicken und dort per Speichern-Dialog ablegen; liefert den Pfad (null = abgebrochen) */
-async function ablegen(blob: Blob, name: string): Promise<string | null> {
-  const gruppe = "teilen" + Date.now().toString(36);
-  await hochladen(gruppe, blob, name);
-  const res = await rpc<{ abgebrochen: boolean; pfad?: string }>("teilen_ablegen", { gruppe, name });
-  return res.abgebrochen ? null : res.pfad ?? null;
+/** Erst den Speicherort wählen (der Dialog braucht den frischen Klick), dann rechnen und schreiben */
+async function speichernAls(name: string, blob: () => Promise<Blob>) {
+  const ziel = await dateiWaehlen(name);
+  return ziel ? ziel.schreiben(await blob()) : null;
 }
 /** PNG in die Zwischenablage (als Promise, damit der Klick als Nutzeraktion zählt) */
 async function kopieren(png: Promise<Blob>) {
@@ -501,7 +496,7 @@ export function TeilenSchnell({ a, onClose, onStudio }: { a: Akt; onClose: () =>
     setLaeuft(true); setMeldung(null);
     try {
       if (art === "kopieren") { await kopieren(alsPng(d, st)); setMeldung({ text: "Bild kopiert" }); }
-      else { const p = await ablegen(await alsPng(d, st), bildName(d, st)); if (p) setMeldung({ text: "Gespeichert: " + p }); }
+      else { const g = await speichernAls(bildName(d, st), () => alsPng(d, st)); if (g) setMeldung({ text: g.text }); }
     } catch (e) { setMeldung({ text: (e as Error).message, fehler: true }); } finally { setLaeuft(false); }
   };
   return (
@@ -582,7 +577,7 @@ export function Studio({ akts, start, onClose }: { akts: Akt[]; start: StudioSta
   const [sel, setSel] = useState<string | null>(null);
   const [laeuft, setLaeuft] = useState(false);
   const [arbeit, setArbeit] = useState<{ titel: string; anteil: number; text: string; ab?: AbortController } | null>(null);
-  const [ergebnis, setErgebnis] = useState<{ text: string; ordner?: string; fehler?: boolean } | null>(null);
+  const [ergebnis, setErgebnis] = useState<{ text: string; ordner?: string; fehler?: boolean; video?: { blob: Blob; name: string } } | null>(null);
   const [fragen, setFragen] = useState(false);
   const einzelGeaendert = !!basis && JSON.stringify(ein.st) !== JSON.stringify(basis);
   const sammelGeaendert = JSON.stringify(sm.st) !== JSON.stringify(sammelBasis);
@@ -608,17 +603,16 @@ export function Studio({ akts, start, onClose }: { akts: Akt[]; start: StudioSta
       return true;
     } catch (e) { setErgebnis({ text: (e as Error).message, fehler: true }); return false; }
   };
-  const ordnerVon = (p: string) => p.replace(/[\\/][^\\/]*$/, "");
   const raus = async (art: "speichern" | "kopieren") => {
     setLaeuft(true); setErgebnis(null);
     try {
       if (einzeln) {
         if (!daten) return;
         if (art === "kopieren") { await kopieren(alsPng(daten, ein.st)); setErgebnis({ text: "Bild kopiert" }); }
-        else { const p = await ablegen(await alsPng(daten, ein.st), bildName(daten, ein.st)); if (p) setErgebnis({ text: "Gespeichert: " + p, ordner: ordnerVon(p) }); }
+        else { const g = await speichernAls(bildName(daten, ein.st), () => alsPng(daten, ein.st)); if (g) setErgebnis(g); }
       } else if (E) {
         if (art === "kopieren") { await kopieren(sammelPng(E, sm.st)); setErgebnis({ text: "Bild kopiert" }); }
-        else { const p = await ablegen(await sammelPng(E, sm.st), sammelName(E, sm.st, "png")); if (p) setErgebnis({ text: "Gespeichert: " + p, ordner: ordnerVon(p) }); }
+        else { const g = await speichernAls(sammelName(E, sm.st, "png"), () => sammelPng(E, sm.st)); if (g) setErgebnis(g); }
       }
     } catch (e) { setErgebnis({ text: (e as Error).message, fehler: true }); } finally { setLaeuft(false); }
   };
@@ -627,23 +621,24 @@ export function Studio({ akts, start, onClose }: { akts: Akt[]; start: StudioSta
     const ab = new AbortController();
     const liste = akts.filter((a) => auswahl.includes(a.id)).sort((x, y) => (x.d < y.d ? -1 : 1));
     setErgebnis(null);
-    setArbeit({ titel: "Bilder werden erstellt", anteil: 0, text: "0 von " + liste.length, ab });
     try {
+      const ziel = await ordnerWaehlen();
+      if (!ziel) return;
+      setArbeit({ titel: "Bilder werden erstellt", anteil: 0, text: "0 von " + liste.length, ab });
       const s: TeilState = { ...ein.st, texts: { ...ein.st.texts, title: "", sport: "Auto" } };
-      const gruppe = "bilder" + Date.now().toString(36);
       const namen: string[] = [];
       for (const [i, a] of liste.entries()) {
         if (ab.signal.aborted) return;
         const d = await datenVon(a, s.grafik === "runden");
         let name = bildName(d, s);
         for (let k = 2; namen.includes(name); k++) name = bildName(d, s).replace(/\.png$/, ` (${k}).png`);
-        await hochladen(gruppe, await alsPng(d, s), name);
+        await ziel.schreiben(name, await alsPng(d, s));
         namen.push(name);
         setArbeit((x) => (x ? { ...x, anteil: (i + 1) / liste.length, text: i + 1 + " von " + liste.length } : x));
       }
       setArbeit(null);
-      const r = await rpc<{ abgebrochen: boolean; ordner?: string; anzahl?: number }>("teilen_ablegen_ordner", { gruppe, namen });
-      if (!r.abgebrochen) setErgebnis({ text: `${r.anzahl} Bilder gespeichert: ${r.ordner}`, ordner: r.ordner });
+      const g = await ziel.fertig(namen.length);
+      if (g) setErgebnis(g);
     } catch (e) { setErgebnis({ text: (e as Error).message, fehler: true }); } finally { setArbeit(null); }
   };
   const videoErstellen = async () => {
@@ -659,8 +654,8 @@ export function Studio({ akts, start, onClose }: { akts: Akt[]; start: StudioSta
       const { blob, endung } = await videoAufnehmen((g, t) => zeichneSammel(g, E, s, { W, H }, t, plan), W, H, spur,
         (x) => setArbeit((y) => (y ? { ...y, anteil: x } : y)), ab.signal);
       setArbeit(null);
-      const p = await ablegen(blob, sammelName(E, s, endung));
-      if (p) setErgebnis({ text: "Gespeichert: " + p, ordner: ordnerVon(p) });
+      // Das Rechnen dauert länger, als ein Klick für den Speichern-Dialog gilt: deshalb ein eigener Knopf zum Speichern
+      setErgebnis({ text: "Video ist fertig", video: { blob, name: sammelName(E, s, endung) } });
     } catch (e) { if ((e as Error).name !== "AbortError") setErgebnis({ text: (e as Error).message, fehler: true }); } finally { setArbeit(null); }
   };
 
@@ -695,6 +690,7 @@ export function Studio({ akts, start, onClose }: { akts: Akt[]; start: StudioSta
             <div className={`st-ergebnis${ergebnis.fehler ? " fehler" : ""}`}>
               <span className="grow">{ergebnis.text}</span>
               {ergebnis.ordner && <button className="btn small" onClick={() => void rpc("teilen_ordner", { pfad: ergebnis.ordner })}>Ordner</button>}
+              {ergebnis.video && <button className="btn small primary" onClick={() => { const v = ergebnis.video!; void speichernAls(v.name, async () => v.blob).then((g) => { if (g) setErgebnis(g); }).catch((e) => setErgebnis({ text: (e as Error).message, fehler: true, video: v })); }}><Sym n="download" />Speichern …</button>}
             </div>
           )}
           {einzeln ? daten && (sel ? <ElementPanel d={daten} st={ein.st} mut={ein.mut} eid={sel} onZu={() => setSel(null)} /> : <BildPanel d={daten} st={ein.st} mut={ein.mut} setSel={setSel} setzen={ein.setzen} />)

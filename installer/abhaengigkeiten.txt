@@ -1,0 +1,13 @@
+# Feste Paketstaende fuer den Installer (installer/bauen.ps1). Neu erzeugen nach einem Update von requirements.txt:
+#   .venv\Scripts\python -m pip freeze > installer\abhaengigkeiten.txt   (diese Kopfzeilen wieder einsetzen)
+certifi==2026.10.23
+cffi==2.1.1
+charset-normalizer==3.5.2
+curl_cffi==0.17.0
+garminconnect==0.3.19
+idna==3.20
+pycparser==3.12
+requests==2.34.2
+tzdata==2026.6
+ua-generator==2.1.7
+urllib3==2.8.0

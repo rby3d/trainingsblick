@@ -14,8 +14,10 @@ die Zugangsdaten verschluesselt in %LOCALAPPDATA%\\StravaDashboard\\geheim (lib/
   lib/tresor.py                 Zugangsdaten (Strava, Garmin) verschluesselt per Windows-DPAPI
   lib/strava_dashboard_logik.py Aktivitaeten holen und zwischenspeichern, Bestzeiten/Runden/Wetter im Hintergrund, Demo-Daten
   lib/garmin_logik.py           Garmin Connect (Abruf in lib/garmin_helfer.py mit dem Paket garminconnect)
-  lib/ablage.py                 Speichern-Dialoge fuer Bilder und Videos
+  lib/ablage.py                 Speichern-Dialoge fuer Bilder und Videos (nur Ersatzweg; normal speichert die Seite selbst)
+  lib/update.py, lib/version.py Versionsnummer und Hinweis auf neue Releases auf GitHub
   lib/webshell.py               Server, Fenster, Heartbeat
+Installer: installer/bauen.ps1 (eigenes Python + Inno Setup), Release per Git-Tag (.github/workflows/release.yml).
 Sounds fuer die Videos: Dateien <name>.mp3 in %APPDATA%\\StravaDashboard\\ton (optional); fehlen sie, erzeugt die Seite
 die Effekte selbst. Musik gibt es nur als Datei (musik_lofi.mp3, musik_daytona.mp3).
 """
@@ -35,6 +37,8 @@ import garmin_logik as gl  # noqa: E402
 import orte  # noqa: E402
 import strava_api as sl  # noqa: E402
 import strava_dashboard_logik as dl  # noqa: E402
+import update  # noqa: E402
+import version  # noqa: E402
 import webshell  # noqa: E402
 
 UI_DATEI = HIER / "web" / "index.html"
@@ -63,6 +67,9 @@ class Sitzung:
         self.verb = {"busy": False, "text": ""}
         self.garmin = gl.Garmin(self.cfg, lambda: None, demo)
         self.ablage = ablage.Ablage()
+        self.update = {}
+        if not demo:
+            threading.Thread(target=lambda: setattr(self, "update", update.pruefen()), daemon=True).start()
         if demo:
             self.garmin.pruefen()
         if not demo:
@@ -157,7 +164,8 @@ class Sitzung:
     def zustand(self, _d=None):
         with self.lock:
             return {"ver": self.ver, "ver2": self.ver2, "sync": dict(self.sync), "verb": dict(self.verb), "verbunden": self.verbunden(),
-                    "n": len(self.speicher.akt), "jetzt": time.time(), "neben": self.status, "garmin": self.garmin.zustand()}
+                    "n": len(self.speicher.akt), "jetzt": time.time(), "neben": self.status, "garmin": self.garmin.zustand(),
+                    "version": version.VERSION, "update": self.update}
 
     def daten(self, _d=None):
         with self.lock:
@@ -193,6 +201,16 @@ class Sitzung:
             return {"punkte": dl.demo_route(zid)}
         poly = self.speicher.routen.get(zid, "")
         return {"punkte": dl.polyline_dekodieren(poly) if poly else []}
+
+    OEFFNEN = {"strava_api": "https://www.strava.com/settings/api", "release": "https://github.com/%s/releases/latest" % version.REPO}
+
+    def oeffnen(self, d):
+        """Feste Adressen im Browser oeffnen (Einrichtung, Update-Hinweis); beliebige Adressen gibt es nicht."""
+        url = self.OEFFNEN.get(str(d.get("ziel") or ""))
+        if not url:
+            raise ValueError("Unbekanntes Ziel")
+        webbrowser.open(url)
+        return {"ok": True}
 
     def strava_oeffnen(self, d):
         zid = "".join(ch for ch in str(d.get("id", "")) if ch.isdigit())
@@ -403,7 +421,7 @@ class Sitzung:
 
 def aufrufe(s):
     return {"start": s.start, "zustand": s.zustand, "daten": s.daten, "extras": s.extras_holen, "karte": s.karte, "aktualisieren": s.synchronisieren, "verbinden": s.verbinden,
-            "route": s.route, "strava_oeffnen": s.strava_oeffnen, "einstellungen_speichern": s.einstellungen_speichern,
+            "route": s.route, "strava_oeffnen": s.strava_oeffnen, "oeffnen": s.oeffnen, "einstellungen_speichern": s.einstellungen_speichern,
             "ui_speichern": s.ui_speichern, "garmin_daten": s.garmin_daten, "garmin_pruefen": s.garmin_pruefen,
             "garmin_installieren": s.garmin_installieren, "garmin_anmelden": s.garmin_anmelden, "garmin_mfa": s.garmin_mfa,
             "garmin_sync": s.garmin_sync, "garmin_trennen": s.garmin_trennen,

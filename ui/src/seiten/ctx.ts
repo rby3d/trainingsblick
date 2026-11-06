@@ -7,7 +7,7 @@ import type { StudioStart } from "../studio/Studio";
 
 export type Einst = { ruhepuls: number; maxpuls: number; events: Ev[]; zeitraum: Zeitraum; sport: string; ansicht: string; wochenziel: number };
 export type Zustand = { ver: number; sync: { busy: boolean; text: string; fehler: boolean; fertig: number }; verb: { busy: boolean; text: string }; verbunden: boolean;
-  n: number; jetzt: number; ver2: number; neben: Neben; garmin?: GZ };
+  n: number; jetzt: number; ver2: number; neben: Neben; garmin?: GZ; version?: string; update?: { neu?: string } };
 export type Seite = "uebersicht" | "aktivitaeten" | "koerper" | "zeiten" | "karte";
 export type Aktion = (name: string, body?: unknown) => Promise<void>;
 export type HauptEv = Ev & { tage: number };

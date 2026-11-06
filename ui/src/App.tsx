@@ -203,6 +203,11 @@ export default function App() {
           </button>
         ))}
         <div className="nav-fuss">
+          {z?.update?.neu && (
+            <button className="nav-update" onClick={() => void aktion("oeffnen", { ziel: "release" })} data-tipp="Öffnet die Download-Seite. Die neue Setup-Datei einfach ausführen, deine Daten bleiben erhalten.">
+              <Sym n="download" /><span>Neue Version {z.update.neu}<small>herunterladen …</small></span>
+            </button>
+          )}
           <div className="nav-stand">
             <span><i className={`stand-pkt${z?.sync.busy ? " laeuft" : z?.sync.fehler ? " fehler" : z?.verbunden ? " ok" : ""}`} />Strava{stand ? ` · ${stand}` : ""}</span>
             {gz.verbunden && <span><i className={`stand-pkt${gz.busy ? " laeuft" : gz.fehler ? " fehler" : " ok"}`} />Garmin{gStand ? ` · ${gStand}` : ""}</span>}

@@ -4,9 +4,107 @@ import { GarminVerbinden, GZ } from "./erholung";
 import { DatumWahl } from "./datum";
 import { Sym, SymFeld } from "./symbole";
 import { nf, Ev } from "./util";
+import { dateiWaehlen } from "./speichern";
 import type { Aktion, Einst, Zustand } from "./seiten/ctx";
 
 const SCHRITTE: [string, string, string][] = [["kette", "Strava", "Aktivitäten"], ["uhrband", "Garmin", "optional"], ["flagge", "Ziel", "optional"], ["haken", "Fertig", "erster Abruf"]];
+const CID_OK = /^\d{3,12}$/;
+const SEC_OK = /^[0-9a-f]{40}$/i;
+/** Felder des (englischen) Strava-Formulars: Feldname, was hinein soll, Wert zum Kopieren, wichtig */
+const FELDER: [string, string, string, boolean][] = [
+  ["Application Name", "Mein Dashboard", "Mein Dashboard", false],
+  ["Category", "„Data Importer“ auswählen", "", false],
+  ["Club", "leer lassen", "", false],
+  ["Website", "http://localhost", "http://localhost", false],
+  ["Application Description", "leer lassen", "", false],
+  ["Authorization Callback Domain", "localhost", "localhost", true],
+];
+
+/** Bild für die Strava-App (Strava verlangt manchmal eins): das Programmsymbol, wie installer/symbol.py */
+function stravaBild(): Promise<Blob> {
+  const n = 512, c = document.createElement("canvas");
+  c.width = c.height = n;
+  const g = c.getContext("2d")!;
+  const v = g.createLinearGradient(0, 0, 0, n);
+  v.addColorStop(0, "#ff7a30"); v.addColorStop(1, "#fc4c02");
+  g.fillStyle = v;
+  g.beginPath(); g.roundRect(0, 0, n, n, n * 0.22); g.fill();
+  g.strokeStyle = "#fff"; g.lineWidth = n * 0.095; g.lineCap = "round"; g.lineJoin = "round";
+  g.beginPath();
+  [[0.2, 0.68], [0.37, 0.44], [0.5, 0.57], [0.65, 0.31], [0.81, 0.63]].forEach(([x, y], k) => (k ? g.lineTo(x * n, y * n) : g.moveTo(x * n, y * n)));
+  g.stroke();
+  return new Promise((ok, fehl) => c.toBlob((b) => (b ? ok(b) : fehl(new Error("Bild ließ sich nicht erstellen"))), "image/png"));
+}
+
+/** Schritt für Schritt zur eigenen Strava-API-App, mit Kopier-Knöpfen und Prüfung der eingefügten Werte */
+function StravaAnleitung({ cid, setCid, sec, setSec, aktion }: { cid: string; setCid: (v: string) => void; sec: string; setSec: (v: string) => void; aktion: Aktion }) {
+  const [kopiert, setKopiert] = useState("");
+  const [bild, setBild] = useState("");
+  const kopieren = async (wert: string) => {
+    try { await navigator.clipboard.writeText(wert); } catch {
+      // Zwischenablage gesperrt: alter Weg über ein verstecktes Textfeld
+      const t = document.createElement("textarea");
+      t.value = wert; t.style.position = "fixed"; t.style.opacity = "0";
+      document.body.appendChild(t); t.select();
+      const ok = document.execCommand("copy");
+      t.remove();
+      if (!ok) { setKopiert("!" + wert); return; }
+    }
+    setKopiert(wert);
+    window.setTimeout(() => setKopiert((k) => (k === wert ? "" : k)), 1600);
+  };
+  const bildSpeichern = async () => {
+    try {
+      const ziel = await dateiWaehlen("Strava Dashboard.png");
+      const g = ziel && await ziel.schreiben(await stravaBild());
+      if (g) setBild("Bild gespeichert. Bei Strava auf das Bildfeld klicken und diese Datei wählen.");
+    } catch (e) { setBild((e as Error).message); }
+  };
+  const c = cid.trim(), s = sec.trim();
+  return (
+    <div className="ob-anleitung">
+      <div className="ob-karte">
+        <span className="ob-nr">1</span>
+        <div className="grow"><b>Strava-Seite für Entwickler öffnen</b><small>Dort ggf. anmelden. Die Seite ist auf Englisch, die Felder stehen hier übersetzt.</small></div>
+        <button className="btn" onClick={() => void aktion("oeffnen", { ziel: "strava_api" })}><Sym n="extern" />Strava öffnen</button>
+      </div>
+      <div className="ob-karte">
+        <span className="ob-nr">2</span>
+        <div className="grow">
+          <b>Formular „My API Application“ ausfüllen</b>
+          <table className="ob-felder"><tbody>
+            {FELDER.map(([feld, inhalt, wert, wichtig]) => (
+              <tr key={feld} className={wichtig ? "wichtig" : ""}>
+                <td>{feld}</td>
+                <td>{wert ? <code>{inhalt}</code> : <span className="muted">{inhalt}</span>}{wichtig && <small>genau so, ohne http und ohne Schrägstrich</small>}</td>
+                <td>{wert && (kopiert === "!" + wert
+                  ? <small>bitte markieren und mit Strg+C kopieren</small>
+                  : <button className="btn small" onClick={() => void kopieren(wert)}><Sym n={kopiert === wert ? "haken" : "kopieren"} />{kopiert === wert ? "Kopiert" : "Kopieren"}</button>)}</td>
+              </tr>
+            ))}
+          </tbody></table>
+          <small>Dann den Haken bei den Bedingungen setzen und auf <b>„Create“</b> klicken. Fragt Strava nach einem Bild für die App:{" "}
+            <button className="btn-link" onClick={() => void bildSpeichern()}>passendes Bild speichern …</button></small>
+          {bild && <small className="ob-hinweis">{bild}</small>}
+        </div>
+      </div>
+      <div className="ob-karte">
+        <span className="ob-nr">3</span>
+        <div className="grow">
+          <b>Client ID und Client Secret hier einfügen</b>
+          <small>Sie stehen danach auf derselben Seite. Beim Client Secret erst auf „Show“ klicken.</small>
+          <div className="ob-form">
+            <label>Client ID<input type="text" inputMode="numeric" value={cid} placeholder="z. B. 123456" onChange={(e) => setCid(e.target.value)} />
+              {c && !CID_OK.test(c) && <small className="bad">Die Client ID ist nur eine Zahl.</small>}</label>
+            <label>Client Secret<input type="password" value={sec} placeholder="40 Zeichen" onChange={(e) => setSec(e.target.value)} />
+              {s && !SEC_OK.test(s) && <small className="bad">{s.length < 40 ? `Erst ${s.length} von 40 Zeichen. Auf „Show“ geklickt und alles kopiert?` : "Das sieht nicht nach einem Client Secret aus (40 Zeichen aus 0–9 und a–f)."}</small>}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const heuteIso = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 
 export function Einrichtung({ z, gz, einst, aktion, speichern, onClose }: {
@@ -51,22 +149,15 @@ export function Einrichtung({ z, gz, einst, aktion, speichern, onClose }: {
           </>
         ) : (
           <>
-            <p>Das Dashboard holt deine Aktivitäten direkt bei Strava. Dafür brauchst du eine eigene, kostenlose Strava-API-App.</p>
-            <ol className="ob-schritte">
-              <li><b>strava.com/settings/api</b> öffnen und eine App anlegen (Name beliebig, Website z. B. <code>http://localhost</code>)</li>
-              <li>Bei „Authorization Callback Domain“ <code>localhost</code> eintragen</li>
-              <li>Client ID und Client Secret hier einfügen</li>
-            </ol>
-            <div className="ob-form">
-              <label>Client ID<input type="text" value={cid} onChange={(e) => setCid(e.target.value)} autoFocus /></label>
-              <label>Client Secret<input type="password" value={sec} onChange={(e) => setSec(e.target.value)} /></label>
-            </div>
+            <p>Strava gibt deine Aktivitäten nur an Programme heraus, die du selbst bei Strava anmeldest. Das ist kostenlos und dauert etwa drei Minuten.</p>
+            <StravaAnleitung cid={cid} setCid={setCid} sec={sec} setSec={setSec} aktion={aktion} />
             {z?.verb.text && <div className={z.verb.text.startsWith("Fehler") ? "fehlbox" : "muted"}>{z.verb.text}</div>}
-            <div className="ob-sicher"><Sym n="haken" />Die Zugangsdaten bleiben auf deinem PC.</div>
+            <div className="ob-sicher"><Sym n="haken" />Client ID und Secret bleiben verschlüsselt auf deinem PC.</div>
             <div className="ob-fuss">
               <span className="grow" />
               <button className="btn" onClick={() => setI(1)}>Später</button>
-              <button className="btn primary" disabled={!z || z.verb.busy || !cid.trim() || !sec.trim()} onClick={() => void aktion("verbinden", { client_id: cid, client_secret: sec })}>
+              <button className="btn primary" disabled={!z || z.verb.busy || !CID_OK.test(cid.trim()) || !SEC_OK.test(sec.trim())}
+                onClick={() => void aktion("verbinden", { client_id: cid.trim(), client_secret: sec.trim() })}>
                 {z?.verb.busy ? "Warte auf Strava …" : "Mit Strava verbinden …"}
               </button>
             </div>

@@ -42,6 +42,7 @@ const PFADE: Record<string, JSX.Element> = {
   play: <path d="M7 4v16l13-8z" />,
   stift: <path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" />,
   links: <path d="M15 6l-6 6 6 6" />,
+  extern: <><path d="M14 4h6v6" /><path d="M20 4l-9 9" /><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5" /></>,
 };
 
 /** Ein Symbol in Textfarbe */

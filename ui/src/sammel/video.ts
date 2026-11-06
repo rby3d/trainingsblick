@@ -1,6 +1,6 @@
 /* Videos aus dem Sammelbild: wenn möglich Bild für Bild gerechnet (WebCodecs + Mediabunny, MP4 mit fester Bildrate, unten),
    sonst mit MediaRecorder in Echtzeit aufgenommen. Dieselbe Tonplanung spielt die Vorschau ab.
-   Töne: liegt im Ton-Ordner (config/strava_dashboard.json "ton_ordner", sonst .cache\ton) eine Datei <name>.mp3, wird sie
+   Töne: liegt im Ton-Ordner (Einstellung "ton_ordner", sonst %APPDATA%\StravaDashboard\ton) eine Datei <name>.mp3, wird sie
    genommen (z. B. die eigene Sound-Sammlung); sonst werden die Effekte hier erzeugt, damit es ohne lizenzierte Dateien geht.
    Musik gibt es nur als Datei (musik_lofi.mp3, musik_daytona.mp3).
    Übernommen aus Formkurve (frontend/src/lib/video.ts); bei Änderungen beide pflegen. */

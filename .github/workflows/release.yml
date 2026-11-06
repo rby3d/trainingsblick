@@ -1,0 +1,68 @@
+# Baut den Windows-Installer und legt ihn als GitHub-Release ab, sobald ein Tag v<Version> gepusht wird.
+# Ablauf fuer ein neues Release:
+#   1. VERSION in lib/version.py erhoehen und committen
+#   2. git tag v1.2.0 && git push origin v1.2.0
+# Das Dashboard zeigt Nutzern danach beim Start einen Hinweis auf die neue Version (lib/update.py).
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:      # zum Ausprobieren: baut nur, ohne Release
+
+permissions:
+  contents: write
+
+jobs:
+  installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+
+      - name: Oberflaeche bauen
+        working-directory: ui
+        run: |
+          npm ci
+          npm run build
+
+      - name: Inno Setup bereitstellen
+        shell: pwsh
+        run: |
+          if (-not (Get-Command ISCC.exe -ErrorAction SilentlyContinue) -and -not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) {
+            choco install innosetup -y --no-progress
+          }
+
+      - name: Installer bauen
+        shell: pwsh
+        env:
+          PYTHON: python
+        run: |
+          $v = if ("${{ github.ref_type }}" -eq "tag") { "${{ github.ref_name }}" } else { "" }
+          ./installer/bauen.ps1 -Version $v
+
+      - name: Als Artefakt ablegen
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer
+          path: installer/build/Strava-Dashboard-Setup-*.exe
+
+      - name: Release anlegen
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installer/build/Strava-Dashboard-Setup-*.exe
+          body: |
+            **Installieren:** `Strava-Dashboard-Setup-…exe` unten herunterladen und doppelklicken.
+            Warnt Windows („Der Computer wurde durch Windows geschützt“): auf „Weitere Informationen“ und dann „Trotzdem ausführen“ klicken.
+
+            **Update:** einfach die neue Setup-Datei ausführen. Einstellungen, Daten und Zugänge bleiben erhalten.
