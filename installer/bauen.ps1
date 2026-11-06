@@ -28,7 +28,8 @@ $Version = $imCode
 Write-Host "Strava Dashboard $Version"
 
 # ---- Python fuer pip
-$PyBefehl = if ($env:PYTHON) { @($env:PYTHON) } else { @("py", "-3.12") }
+# @( ... ) aussen: ein if mit nur einem Wert lieferte sonst einen Text statt einer Liste ($PyBefehl[0] waere dann "p")
+$PyBefehl = @(if ($env:PYTHON) { $env:PYTHON } else { "py", "-3.12" })
 function Python-Aufruf { & $PyBefehl[0] @($PyBefehl | Select-Object -Skip 1) @args; if ($LASTEXITCODE) { throw "Python-Aufruf fehlgeschlagen: $args" } }
 
 # ---- 1. eingebettetes Python
