@@ -1,4 +1,4 @@
-# Python-Umgebung (legt "Strava Dashboard starten.cmd" beim ersten Start an)
+# Python-Umgebung (legt "Trainingsblick starten.cmd" beim ersten Start an)
 .venv/
 __pycache__/
 *.pyc
@@ -6,7 +6,7 @@ __pycache__/
 # Oberfläche: Pakete zum Bauen (web/index.html ist der fertige Build und gehört ins Repo)
 ui/node_modules/
 
-# Eigene Daten liegen nicht hier, sondern in %APPDATA%\StravaDashboard; zur Sicherheit trotzdem ausschließen
+# Eigene Daten liegen nicht hier, sondern in %APPDATA%\Trainingsblick; zur Sicherheit trotzdem ausschließen
 config/
 .cache/
 *.secrets.json
@@ -15,3 +15,6 @@ config/
 # Installer: Zwischenstand und heruntergeladenes Python (installer/bauen.ps1)
 installer/build/
 installer/cache/
+
+# Eigene Hilfsskripte (z. B. Reel-Aufnahme), nicht Teil des Programms
+tools/

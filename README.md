@@ -1,6 +1,11 @@
-# Strava Dashboard
+# Trainingsblick
 
 Ein Programm für Windows, das deine Strava-Aktivitäten übersichtlich auswertet und schöne Bilder und Videos zum Teilen macht.
+
+### [⬇ Trainingsblick für Windows herunterladen](https://github.com/tp-codings/trainingsblick/releases/latest)
+
+Auf der Seite unten bei „Assets“ die Datei `Trainingsblick-Setup-….exe` anklicken. Anleitung: [Installation](#installation).
+Fragen oder Probleme: per Nachricht auf Instagram an [@tritopa](https://www.instagram.com/tritopa/).
 
 - **Übersicht**: wie fit du gerade bist, deine Woche, dein nächster Wettkampf, die letzten Einheiten
 - **Aktivitäten**: Woche, Monat oder Jahr mit Zahlen, Kalender und allen Einheiten
@@ -28,20 +33,20 @@ Sonst musst du nichts installieren: Das Programm bringt alles mit.
 
 ### Schritt 1: Installieren
 
-1. Öffne <https://github.com/tp-codings/strava_dashboard/releases/latest>
-2. Klicke unten bei „Assets“ auf **`Strava-Dashboard-Setup-….exe`**, die Datei landet in deinem Ordner **Downloads**
+1. Öffne <https://github.com/tp-codings/trainingsblick/releases/latest>
+2. Klicke unten bei „Assets“ auf **`Trainingsblick-Setup-….exe`**, die Datei landet in deinem Ordner **Downloads**
 3. Doppelklicke die Datei
 4. Falls Windows warnt („Der Computer wurde durch Windows geschützt“): auf **„Weitere Informationen“** klicken, dann auf
    **„Trotzdem ausführen“**. Das kommt, weil das Programm neu und nicht bei Microsoft registriert ist.
 5. Im Installer auf **„Installieren“** und am Ende auf **„Fertigstellen“** klicken. Adminrechte brauchst du nicht.
 
-Das Dashboard öffnet sich in einem eigenen Fenster mit der **Einrichtung**. Später startest du es über das Startmenü
-oder die Verknüpfung **„Strava Dashboard“** auf dem Desktop.
+Trainingsblick öffnet sich in einem eigenen Fenster mit der **Einrichtung**. Später startest du es über das Startmenü
+oder die Verknüpfung **„Trainingsblick“** auf dem Desktop.
 
 ### Schritt 2: Mit Strava verbinden
 
 Strava erlaubt Programmen nur Zugriff, wenn du dafür eine eigene, kostenlose „API-App“ anlegst. Das klingt technischer, als es ist,
-und die Einrichtung im Dashboard führt dich mit Kopier-Knöpfen durch jeden Schritt:
+und die Einrichtung in Trainingsblick führt dich mit Kopier-Knöpfen durch jeden Schritt:
 
 1. In der Einrichtung auf **„Strava öffnen“** klicken (oder <https://www.strava.com/settings/api> öffnen) und bei Strava anmelden
 2. Fülle das Formular so aus:
@@ -58,11 +63,11 @@ und die Einrichtung im Dashboard führt dich mit Kopier-Knöpfen durch jeden Sch
 3. Bestätige die Bedingungen und klicke auf **„Create“**.
    Falls Strava nach einem Bild für die App fragt: In der Einrichtung auf **„passendes Bild speichern …“** klicken und dieses Bild hochladen.
 4. Du siehst jetzt deine App mit **Client ID** (eine Zahl) und **Client Secret** (auf **„Show“** klicken, eine lange Buchstaben-Zahlen-Folge)
-5. Kopiere beide in die Einrichtung des Dashboards und klicke auf **„Mit Strava verbinden …“**
+5. Kopiere beide in die Einrichtung von Trainingsblick und klicke auf **„Mit Strava verbinden …“**
 6. Im Browser öffnet sich Strava. Lass den Haken bei **„Aktivitätsdaten ansehen“** (bzw. „View data about your activities“) gesetzt und klicke auf **„Autorisieren“**
 7. Es erscheint „Mit Strava verbunden ✔“. Diesen Browser-Tab kannst du schließen.
 
-Das Dashboard lädt jetzt deine Aktivitäten. Die neuesten siehst du nach wenigen Sekunden, ältere kommen im Hintergrund dazu.
+Trainingsblick lädt jetzt deine Aktivitäten. Die neuesten siehst du nach wenigen Sekunden, ältere kommen im Hintergrund dazu.
 Bestzeiten, Runden und Wetter füllen sich über die nächsten Stunden bis Tage nach (Strava erlaubt nur eine begrenzte Zahl
 an Abrufen pro Viertelstunde und Tag).
 
@@ -107,10 +112,10 @@ Ein Wochenziel in Stunden ist auch möglich. Beides lässt sich später unter **
 
 ## Update auf eine neue Version
 
-Gibt es eine neue Version, zeigt das Dashboard links unten **„Neue Version … herunterladen“**.
+Gibt es eine neue Version, zeigt Trainingsblick links unten **„Neue Version … herunterladen“**.
 
 1. Darauf klicken: Die Download-Seite öffnet sich
-2. Die neue `Strava-Dashboard-Setup-….exe` herunterladen und doppelklicken (das Dashboard vorher schließen)
+2. Die neue `Trainingsblick-Setup-….exe` herunterladen und doppelklicken (Trainingsblick vorher schließen)
 
 Deine Einstellungen, der Strava-Zugang und die geladenen Daten bleiben dabei erhalten, denn sie liegen nicht im Programmordner (siehe unten).
 
@@ -118,19 +123,19 @@ Deine Einstellungen, der Strava-Zugang und die geladenen Daten bleiben dabei erh
 
 ## Wo liegen meine Daten?
 
-Einstellungen und geladene Daten liegen in **`%APPDATA%\StravaDashboard`**
-(im Explorer oben in die Adresszeile `%APPDATA%\StravaDashboard` eintippen und Enter drücken):
+Einstellungen und geladene Daten liegen in **`%APPDATA%\Trainingsblick`**
+(im Explorer oben in die Adresszeile `%APPDATA%\Trainingsblick` eintippen und Enter drücken):
 
 | Ordner | Inhalt |
 |---|---|
-| `config\strava_dashboard.json` | Einstellungen (Puls, Ziele, Designs, Fenstergröße), nichts Geheimes |
+| `config\trainingsblick.json` | Einstellungen (Puls, Ziele, Designs, Fenstergröße), nichts Geheimes |
 | `cache\` | geladene Aktivitäten, Bestzeiten, Runden, Wetter, Garmin-Daten. Darf gelöscht werden, wird dann neu geladen. |
 | `logs\` | Fehlerberichte, falls das Programm abstürzt |
 | `ton\` | eigene Sounds für die Videos (optional, siehe unten) |
 
-Die **Zugangsdaten** (Strava und Garmin) liegen getrennt davon verschlüsselt in **`%LOCALAPPDATA%\StravaDashboard\geheim`**.
+Die **Zugangsdaten** (Strava und Garmin) liegen getrennt davon verschlüsselt in **`%LOCALAPPDATA%\Trainingsblick\geheim`**.
 
-Bilder und Videos speicherst du, wohin du willst (Vorschlag: `Bilder\Strava Dashboard`).
+Bilder und Videos speicherst du, wohin du willst (Vorschlag: `Bilder\Trainingsblick`).
 
 ---
 
@@ -143,7 +148,7 @@ Bilder und Videos speicherst du, wohin du willst (Vorschlag: `Bilder\Strava Dash
   unter deinem Windows-Konto auf diesem PC öffnen. Ein Backup, ein kopierter Ordner oder ein anderes Benutzerkonto können
   damit nichts anfangen.
 - Zugangsdaten liegen **nirgends im Klartext** auf der Platte. Ältere Versionen haben sie als Datei abgelegt
-  (`%APPDATA%\StravaDashboard\config\strava.secrets.json`, `%USERPROFILE%\.garminconnect\garmin_tokens.json`); beim ersten
+  (`%APPDATA%\Trainingsblick\config\strava.secrets.json`, `%USERPROFILE%\.garminconnect\garmin_tokens.json`); beim ersten
   Start übernimmt das Programm sie verschlüsselt und löscht die alten Dateien.
 - Was DPAPI **nicht** verhindert (das kann kein Programm, auch kein Browser): Schadsoftware, die unter deinem eigenen
   Windows-Konto läuft. Halte Windows und deinen Virenschutz aktuell.
@@ -164,7 +169,7 @@ Bilder und Videos speicherst du, wohin du willst (Vorschlag: `Bilder\Strava Dash
 ## Eigene Sounds für Videos (optional)
 
 Ohne Zutun erzeugt das Programm die Sound-Effekte selbst. Wer eigene Sounds möchte, legt MP3-Dateien mit genau diesen Namen in
-`%APPDATA%\StravaDashboard\ton`: `woosh.mp3`, `blop.mp3`, `klick.mp3`, `riser.mp3`, `impact.mp3`, `bling.mp3`.
+`%APPDATA%\Trainingsblick\ton`: `woosh.mp3`, `blop.mp3`, `klick.mp3`, `riser.mp3`, `impact.mp3`, `bling.mp3`.
 Für Hintergrundmusik: `musik_lofi.mp3` und/oder `musik_daytona.mp3` (dann erscheint im Studio die Auswahl „Musik“).
 Achte darauf, dass du die Sounds verwenden darfst.
 
@@ -176,7 +181,7 @@ Achte darauf, dass du die Sounds verwenden darfst.
 |---|---|
 | „Der Computer wurde durch Windows geschützt“ beim Installieren | Auf **„Weitere Informationen“** und dann **„Trotzdem ausführen“** klicken. |
 | Der Virenschutz meldet die Setup-Datei | Kommt bei neuen, unsignierten Programmen vor. Nur die Datei von der Release-Seite oben verwenden. |
-| Strava: „Port 8123 ist belegt“ | Läuft das Dashboard zweimal? Alle Fenster schließen und neu starten. |
+| Strava: „Port 8123 ist belegt“ | Läuft Trainingsblick zweimal? Alle Fenster schließen und neu starten. |
 | Strava: „redirect_uri invalid“ / „Bad Request“ | In der Strava-API-App muss bei **Authorization Callback Domain** genau `localhost` stehen. |
 | Strava: „Der Zugriff auf Aktivitäten wurde nicht freigegeben“ | Beim Verbinden den Haken bei „Aktivitätsdaten ansehen“ setzen. |
 | Strava antwortet mit „HTTP 429“ | Strava-Limit erreicht (zu viele Abrufe). Das Programm wartet von selbst und macht später weiter. |
@@ -186,15 +191,17 @@ Achte darauf, dass du die Sounds verwenden darfst.
 | Video lässt sich nicht erstellen | Das Programm nutzt Microsoft Edge (oder Chrome) als Fenster. Edge aktualisieren. |
 | Das Fenster ist weg, das Programm läuft aber noch | Im Task-Manager „pythonw.exe“ beenden und neu starten. |
 
-Hilft das alles nicht: den neuesten Bericht aus `%APPDATA%\StravaDashboard\logs` an Tobi schicken.
+Hilft das alles nicht: schreib eine Nachricht auf Instagram an [@tritopa](https://www.instagram.com/tritopa/). Am besten mit
+einem Bildschirmfoto der Meldung und, falls vorhanden, dem neuesten Bericht aus `%APPDATA%\Trainingsblick\logs`
+(der enthält keine Zugangsdaten).
 
 ---
 
 ## Deinstallieren
 
-1. Windows-**Einstellungen → Apps → Installierte Apps**, „Strava Dashboard“ → **Deinstallieren**
+1. Windows-**Einstellungen → Apps → Installierte Apps**, „Trainingsblick“ → **Deinstallieren**
 2. Die Frage, ob auch deine Daten und Zugänge gelöscht werden sollen, mit **„Ja“** beantworten
-   (sonst bleiben `%APPDATA%\StravaDashboard` und `%LOCALAPPDATA%\StravaDashboard` für eine spätere Neuinstallation liegen)
+   (sonst bleiben `%APPDATA%\Trainingsblick` und `%LOCALAPPDATA%\Trainingsblick` für eine spätere Neuinstallation liegen)
 3. Optional: auf <https://www.strava.com/settings/apps> den Zugriff von „Mein Dashboard“ widerrufen und die API-App löschen
 
 ---
@@ -202,22 +209,22 @@ Hilft das alles nicht: den neuesten Bericht aus `%APPDATA%\StravaDashboard\logs`
 ## Für Entwickler
 
 ```
-strava_dashboard.py            Einstieg: Server mit RPC-Funktionen, Fenster (lib/webshell.py)
+trainingsblick.py            Einstieg: Server mit RPC-Funktionen, Fenster (lib/webshell.py)
 lib/strava_api.py              Strava-Anmeldung (OAuth, Callback localhost:8123) und Abrufe
-lib/strava_dashboard_logik.py  Aktivitäten holen und zwischenspeichern, Bestzeiten/Runden/Wetter im Hintergrund, Demo-Daten
+lib/trainingsblick_logik.py  Aktivitäten holen und zwischenspeichern, Bestzeiten/Runden/Wetter im Hintergrund, Demo-Daten
 lib/garmin_logik.py            Garmin Connect; Abruf in lib/garmin_helfer.py (Paket garminconnect, Python ≥ 3.12),
                                der Zugang geht nur über stdin/stdout an den Helfer, nie als Datei
 lib/ablage.py                  Ordner öffnen; Speichern-Dialoge nur als Ersatzweg (normal speichert die Seite, ui/src/speichern.ts)
-lib/orte.py                    Datenordner (%APPDATA%\StravaDashboard, abweichend per STRAVA_DASHBOARD_DATEN)
-lib/tresor.py                  Zugangsdaten verschlüsselt (DPAPI) in %LOCALAPPDATA%\StravaDashboard\geheim
+lib/orte.py                    Datenordner (%APPDATA%\Trainingsblick, abweichend per TRAININGSBLICK_DATEN)
+lib/tresor.py                  Zugangsdaten verschlüsselt (DPAPI) in %LOCALAPPDATA%\Trainingsblick\geheim
 lib/version.py, lib/update.py  Versionsnummer, Hinweis auf neue Releases
 ui/                            Oberfläche: React + TypeScript + Vite
 web/index.html                 fertiger Build der Oberfläche (eine Datei, mit eingecheckt)
-installer/                     Installer: bauen.ps1 (eingebettetes Python + Inno Setup), strava_dashboard.iss, symbol.py
+installer/                     Installer: bauen.ps1 (eingebettetes Python + Inno Setup), trainingsblick.iss, symbol.py
 .github/workflows/release.yml  baut bei einem Tag v<Version> die Setup.exe und legt das Release an
 ```
 
-Aus dem Quellcode starten: `Strava Dashboard starten.cmd` (legt `.venv` an), zum Ausprobieren `Demo starten.cmd`.
+Aus dem Quellcode starten: `Trainingsblick starten.cmd` (legt `.venv` an), zum Ausprobieren `Demo starten.cmd`.
 
 Neues Release: `VERSION` in `lib/version.py` erhöhen, committen, dann `git tag v1.2.0` und `git push origin v1.2.0`.
 Lokal bauen (braucht Python 3.12 und [Inno Setup 6](https://jrsoftware.org/isdl.php)):
@@ -231,9 +238,22 @@ npm ci
 npm run build
 ```
 
-Ohne Fenster starten (gibt nur die Adresse aus): `.venv\Scripts\python strava_dashboard.py --kein-fenster --demo --port 8800 --token test`,
+Ohne Fenster starten (gibt nur die Adresse aus): `.venv\Scripts\python trainingsblick.py --kein-fenster --demo --port 8800 --token test`,
 dann im Browser `http://127.0.0.1:8800/?t=test` öffnen.
 
 Bilder und Videos zeichnet die Oberfläche selbst (Canvas). Videos entstehen Bild für Bild mit WebCodecs und
 [Mediabunny](https://mediabunny.dev) als MP4 mit fester Bildrate. Die Zeichen- und Intervall-Logik ist eine Kopie aus der App
 Formkurve (`ui/src/studio`, `ui/src/sammel`).
+
+---
+
+## Lizenz und Hinweise
+
+Trainingsblick steht unter der [MIT-Lizenz](LICENSE): Du darfst es frei nutzen, weitergeben und verändern. Es gibt keine
+Gewähr, dass alles fehlerfrei funktioniert.
+
+Trainingsblick ist ein privates Projekt und **kein Produkt von Strava oder Garmin**. Es wird von ihnen weder unterstützt
+noch geprüft. Strava ist eine Marke von Strava, Inc., Garmin eine Marke von Garmin Ltd. oder ihren Tochtergesellschaften.
+
+Bis Version 1.0.1 hieß das Programm „Strava Dashboard“. Wer das installiert hat, führt einfach die neue Setup-Datei aus:
+Sie ersetzt das alte Programm, und Einstellungen, Daten und Zugänge werden beim ersten Start übernommen.

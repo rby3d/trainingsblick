@@ -58,7 +58,7 @@ SYMBOLE = {
     "PythonManager": ("#3776ab", '<path d="M8.5 7 3.5 12l5 5M15.5 7l5 5-5 5M13.5 5l-3 14"/>'),
     "ResolveTools": ("#dc2626", '<rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M8 5v14M16 5v14M3.5 12h17"/>'),
     "ResolvePacks": ("#be123c", '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9zM4 7.5l8 4.5 8-4.5M12 12v9"/>'),
-    "StravaDashboard": ("#ea580c", '<path d="M3.5 20h17M6.5 20v-6M11 20V6M15.5 20v-9M20 20V9"/>'),
+    "Trainingsblick": ("#1f8fc4", '<path d="M3.5 20h17M6.5 20v-6M11 20V6M15.5 20v-9M20 20V9"/>'),
     "StravaShare": ("#f97316", '<circle cx="17.5" cy="5.5" r="2.5"/><circle cx="6.5" cy="12" r="2.5"/><circle cx="17.5" cy="18.5" r="2.5"/>'
                                '<path d="M8.7 10.7l6.6-3.9M8.7 13.3l6.6 3.9"/>'),
     "SyncthingStatus": ("#0e7490", '<path d="M19.5 10.5A7.5 7.5 0 0 0 6 7L4 9M4 4v5h5M4.5 13.5A7.5 7.5 0 0 0 18 17l2-2M20 20v-5h-5"/>'),

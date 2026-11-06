@@ -106,7 +106,7 @@ label.chk { display: flex; align-items: center; gap: 8px; cursor: pointer; }
 
 
 
-/* ---- Strava-Dashboard ---- */
+/* ---- Trainingsblick ---- */
 :root {
   --c-ride: #2a78d6; --c-run: #eb6834; --c-swim: #1baf7a; --c-other: #8d8d8a;
   --c-ctl: #2a78d6; --c-atl: #e87ba4;
@@ -601,7 +601,7 @@ tr.gewaehlt td { background: var(--sel); }
 .ob-karte small { color: var(--muted); font-size: 12.5px; }
 .ob-karte .ob-form { margin-top: 4px; }
 .ob-karte .ob-form small.bad { color: var(--bad); }
-.ob-nr { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: #fc4c02; color: #fff; font-weight: 700; font-size: 13px; }
+.ob-nr { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 13px; }
 /* feste Spaltenanteile: die Tabelle passt sich der Breite an, lange Feldnamen brechen um */
 .ob-felder { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
 .ob-felder col.feld { width: 32%; }

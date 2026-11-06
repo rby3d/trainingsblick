@@ -11,7 +11,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-STANDARD = Path.home() / "Pictures" / "Strava Dashboard"
+STANDARD = Path.home() / "Pictures" / "Trainingsblick"
 NO_WINDOW = 0x08000000 if os.name == "nt" else 0
 
 _DIALOG = (

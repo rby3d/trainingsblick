@@ -7,7 +7,8 @@ nur unter diesem Windows-Konto auf diesem PC entschluesseln; ein Backup, ein kop
 koennen damit nichts anfangen. Gegen Programme, die unter demselben Konto laufen, schuetzt das (wie bei jedem Browser) nicht.
 Andere Systeme: nichts wird gespeichert (schreiben wirft OSError), Zugangsdaten gibt es nie im Klartext auf der Platte.
 
-Ablage: <GEHEIM>\\<name>.bin (lib/orte.py, %LOCALAPPDATA%\\StravaDashboard\\geheim: wandert nicht mit dem Profil).
+Ablage: <GEHEIM>\\<name>.bin (lib/orte.py, %LOCALAPPDATA%\\Trainingsblick\\geheim: wandert nicht mit dem Profil).
+Das Programm hiess frueher "Strava Dashboard"; _ENTROPIE behaelt den alten Namen, sonst liessen sich gespeicherte Zugaenge nicht mehr lesen.
 Alte Klartext-Dateien frueherer Versionen uebernimmt `uebernehmen` einmalig und loescht sie danach.
 """
 from __future__ import annotations

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Garmin-Connect-Helfer: laeuft mit einem neuen Python (>= 3.12), weil `garminconnect` das verlangt.
 
-Das Strava-Dashboard startet dieses Skript als Unterprozess und liest nur dessen Ausgabe:
+Das Trainingsblick startet dieses Skript als Unterprozess und liest nur dessen Ausgabe:
 je Zeile ein JSON-Objekt  {"ereignis": ...}  auf stdout.
 
   pruefen                          -> {"ereignis":"pruefen","ok":bool,"version":"...","fehler":"..."}

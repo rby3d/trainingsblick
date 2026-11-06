@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Strava-Dashboard - Logik ohne Oberflaeche: Aktivitaeten von Strava holen, zwischenspeichern, Demo-Daten, Einstellungen.
+Trainingsblick - Logik ohne Oberflaeche: Aktivitaeten von Strava holen, zwischenspeichern, Demo-Daten, Einstellungen.
 Die Auswertung (Wochenvolumen, Fitness/Form, Heatmap ...) rechnet die React-Oberflaeche selbst, damit Filter sofort greifen.
 Zugang: lib\\strava_api.py. Daten liegen ausserhalb des Programmordners (lib\\orte.py).
 """
@@ -17,7 +17,7 @@ import urllib.parse
 import urllib.request
 import orte
 
-CONFIG_PATH = orte.CONFIG / "strava_dashboard.json"
+CONFIG_PATH = orte.CONFIG / "trainingsblick.json"
 CACHE_PATH = orte.CACHE / "aktivitaeten.json"
 EXTRAS_PATH = orte.CACHE / "extras.json"
 SCHEMA = 2                      # Aenderung -> Verlauf wird einmal neu von Strava geholt

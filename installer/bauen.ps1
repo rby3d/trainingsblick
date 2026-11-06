@@ -1,10 +1,10 @@
-# Baut den Windows-Installer (installer\build\Strava-Dashboard-Setup-<Version>.exe).
+# Baut den Windows-Installer (installer\build\Trainingsblick-Setup-<Version>.exe).
 #
 #   1. Python "embeddable" von python.org (fest: $PyVersion, Pruefsumme $PySha256) nach build\app\python
 #   2. Pakete aus installer\abhaengigkeiten.txt als fertige Wheels nach build\app\python\Lib\site-packages
-#   3. Programmdateien (strava_dashboard.py, lib, web\index.html) und das Symbol dazu
+#   3. Programmdateien (trainingsblick.py, lib, web\index.html) und das Symbol dazu
 #   4. Kurztest: Demo-Server mit dem eingebetteten Python starten und /api/start abfragen
-#   5. Inno Setup (installer\strava_dashboard.iss) packt alles in eine Setup.exe
+#   5. Inno Setup (installer\trainingsblick.iss) packt alles in eine Setup.exe
 #
 # Aufruf:  powershell -ExecutionPolicy Bypass -File installer\bauen.ps1 [-Version 1.2.0] [-OhneSetup]
 # Braucht: Python 3.12 (py -3.12 oder $env:PYTHON) zum Herunterladen der Pakete, Inno Setup 6 (ISCC.exe).
@@ -25,7 +25,7 @@ $Cache = Join-Path $PSScriptRoot "cache"
 $imCode = (Select-String -Path (Join-Path $Wurzel "lib\version.py") -Pattern '^VERSION\s*=\s*"([^"]+)"').Matches[0].Groups[1].Value
 if ($Version -and $Version.TrimStart("v") -ne $imCode) { throw "Version $Version passt nicht zu lib\version.py ($imCode)" }
 $Version = $imCode
-Write-Host "Strava Dashboard $Version"
+Write-Host "Trainingsblick $Version"
 
 # ---- Python fuer pip
 # @( ... ) aussen: ein if mit nur einem Wert lieferte sonst einen Text statt einer Liste ($PyBefehl[0] waere dann "p")
@@ -57,17 +57,17 @@ Python-Aufruf -m pip install --disable-pip-version-check --no-compile --quiet --
 Get-ChildItem $Sp -Directory -Filter "bin" | Remove-Item -Recurse -Force
 
 # ---- 3. Programmdateien
-Copy-Item (Join-Path $Wurzel "strava_dashboard.py"), (Join-Path $Wurzel "README.md") $App
+Copy-Item (Join-Path $Wurzel "trainingsblick.py"), (Join-Path $Wurzel "README.md") $App
 New-Item -ItemType Directory -Force (Join-Path $App "lib"), (Join-Path $App "web") | Out-Null
 Copy-Item (Join-Path $Wurzel "lib\*.py") (Join-Path $App "lib")
 Copy-Item (Join-Path $Wurzel "web\index.html") (Join-Path $App "web")
-Python-Aufruf (Join-Path $PSScriptRoot "symbol.py") (Join-Path $App "strava_dashboard.ico")
+Python-Aufruf (Join-Path $PSScriptRoot "symbol.py") (Join-Path $App "trainingsblick.ico")
 
 # ---- 4. Kurztest mit dem eingebetteten Python (Demo, ohne Fenster, eigener Datenordner)
 Write-Host "Kurztest ..."
-$env:STRAVA_DASHBOARD_DATEN = Join-Path $Build "testdaten"
+$env:TRAININGSBLICK_DATEN = Join-Path $Build "testdaten"
 $Port = Get-Random -Minimum 20000 -Maximum 40000
-$P = Start-Process (Join-Path $PyOrdner "python.exe") -ArgumentList "`"$App\strava_dashboard.py`"", "--kein-fenster", "--demo", "--port", $Port, "--token", "probe" `
+$P = Start-Process (Join-Path $PyOrdner "python.exe") -ArgumentList "`"$App\trainingsblick.py`"", "--kein-fenster", "--demo", "--port", $Port, "--token", "probe" `
     -PassThru -WindowStyle Hidden -RedirectStandardError (Join-Path $Build "test_fehler.txt") -RedirectStandardOutput (Join-Path $Build "test_ausgabe.txt")
 try {
     $ok = $false
@@ -84,7 +84,7 @@ try {
     Write-Host "Kurztest ok ($g)"
 } finally {
     Stop-Process -Id $P.Id -Force -ErrorAction SilentlyContinue
-    Remove-Item Env:STRAVA_DASHBOARD_DATEN
+    Remove-Item Env:TRAININGSBLICK_DATEN
 }
 Get-ChildItem $App -Recurse -Directory -Filter "__pycache__" | Remove-Item -Recurse -Force
 
@@ -96,6 +96,6 @@ $Iscc = @((Get-Command ISCC.exe -ErrorAction SilentlyContinue | Select-Object -E
           "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
           "$env:ProgramFiles\Inno Setup 6\ISCC.exe") | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
 if (-not $Iscc) { throw "Inno Setup 6 nicht gefunden (https://jrsoftware.org/isdl.php)" }
-& $Iscc "/DVersion=$Version" "/DQuelle=$App" "/O$Build" (Join-Path $PSScriptRoot "strava_dashboard.iss")
+& $Iscc "/DVersion=$Version" "/DQuelle=$App" "/O$Build" (Join-Path $PSScriptRoot "trainingsblick.iss")
 if ($LASTEXITCODE) { throw "Inno Setup fehlgeschlagen" }
-Write-Host "Fertig: $(Join-Path $Build "Strava-Dashboard-Setup-$Version.exe")"
+Write-Host "Fertig: $(Join-Path $Build "Trainingsblick-Setup-$Version.exe")"

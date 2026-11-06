@@ -1,4 +1,4 @@
-"""Garmin-Anbindung fuers Strava-Dashboard.
+"""Garmin-Anbindung fuers Trainingsblick.
 
 Der eigentliche Abruf steckt in lib/garmin_helfer.py und wird mit einem Python >= 3.12 als Unterprozess gestartet.
 Hier: Python finden, Paket pruefen/installieren, Anmeldung (inkl. Zwei-Faktor), Abruf im Hintergrund, Cache lesen.

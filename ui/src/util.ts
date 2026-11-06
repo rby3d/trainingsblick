@@ -1,4 +1,4 @@
-// Auswertung des Strava-Dashboards: reine Funktionen, keine Oberflaeche.
+// Auswertung des Trainingsblicks: reine Funktionen, keine Oberflaeche.
 export type Ev = { name: string; datum: string; haupt: boolean; von: string };
 export type Kat = "Ride" | "Run" | "Swim" | "Other";
 export const KATS: Kat[] = ["Ride", "Run", "Swim", "Other"];

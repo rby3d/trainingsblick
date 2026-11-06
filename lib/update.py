@@ -21,7 +21,7 @@ def pruefen(timeout=8):
     """{"neu": "1.2.0"} wenn auf GitHub eine hoehere Version liegt, sonst {} (auch bei jedem Fehler: kein Netz, Limit ...)."""
     try:
         req = urllib.request.Request("https://api.github.com/repos/%s/releases/latest" % version.REPO,
-                                     headers={"Accept": "application/vnd.github+json", "User-Agent": "StravaDashboard/" + version.VERSION})
+                                     headers={"Accept": "application/vnd.github+json", "User-Agent": "Trainingsblick/" + version.VERSION})
         with urllib.request.urlopen(req, timeout=timeout) as r:
             tag = str(json.loads(r.read().decode("utf-8")).get("tag_name") or "")
     except Exception:       # noqa: BLE001

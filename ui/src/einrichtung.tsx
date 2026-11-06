@@ -21,12 +21,12 @@ const FELDER: [string, string, string, boolean][] = [
 ];
 
 /** Bild für die Strava-App (Strava verlangt manchmal eins): das Programmsymbol, wie installer/symbol.py */
-function stravaBild(): Promise<Blob> {
+function appBild(): Promise<Blob> {
   const n = 512, c = document.createElement("canvas");
   c.width = c.height = n;
   const g = c.getContext("2d")!;
   const v = g.createLinearGradient(0, 0, 0, n);
-  v.addColorStop(0, "#ff7a30"); v.addColorStop(1, "#fc4c02");
+  v.addColorStop(0, "#22c3b4"); v.addColorStop(1, "#1f5fd6");
   g.fillStyle = v;
   g.beginPath(); g.roundRect(0, 0, n, n, n * 0.22); g.fill();
   g.strokeStyle = "#fff"; g.lineWidth = n * 0.095; g.lineCap = "round"; g.lineJoin = "round";
@@ -55,8 +55,8 @@ function StravaAnleitung({ cid, setCid, sec, setSec, aktion }: { cid: string; se
   };
   const bildSpeichern = async () => {
     try {
-      const ziel = await dateiWaehlen("Strava Dashboard.png");
-      const g = ziel && await ziel.schreiben(await stravaBild());
+      const ziel = await dateiWaehlen("Trainingsblick.png");
+      const g = ziel && await ziel.schreiben(await appBild());
       if (g) setBild("Bild gespeichert. Bei Strava auf das Bildfeld klicken und diese Datei wählen.");
     } catch (e) { setBild((e as Error).message); }
   };
@@ -217,7 +217,7 @@ export function Einrichtung({ z, gz, einst, aktion, speichern, onClose }: {
     <div className="ob-hinter" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="ob" role="dialog" aria-label="Einrichtung">
         <aside className="ob-seite">
-          <div className="logo">Strava<small>Einrichtung</small></div>
+          <div className="logo">Trainingsblick<small>Einrichtung</small></div>
           {SCHRITTE.map(([sy, t, u], k) => {
             // Haken nur, wenn es wirklich erledigt ist (übersprungenes Strava/Garmin bleibt ohne)
             const erledigt = k === 0 ? verbunden : k === 1 ? gz.verbunden && !gz.anmelden : k < i;

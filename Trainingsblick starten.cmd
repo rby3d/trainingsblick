@@ -2,13 +2,13 @@
 chcp 65001 >nul
 setlocal
 cd /d "%~dp0"
-title Strava Dashboard
+title Trainingsblick
 
 rem Schon eingerichtet? Dann direkt starten.
 if exist ".venv\Scripts\pythonw.exe" goto starten
 
 echo.
-echo   Strava Dashboard wird eingerichtet (nur beim ersten Start, dauert 1-2 Minuten) ...
+echo   Trainingsblick wird eingerichtet (nur beim ersten Start, dauert 1-2 Minuten) ...
 echo.
 
 rem ---- Python 3.12 oder neuer suchen
@@ -32,12 +32,12 @@ if errorlevel 1 (
 )
 
 rem ---- Verknuepfung auf dem Desktop
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$w = New-Object -ComObject WScript.Shell; $s = $w.CreateShortcut([Environment]::GetFolderPath('Desktop') + '\Strava Dashboard.lnk'); $s.TargetPath = '%~dp0.venv\Scripts\pythonw.exe'; $s.Arguments = '\"%~dp0strava_dashboard.py\"'; $s.WorkingDirectory = '%~dp0'; $s.Description = 'Strava Dashboard'; $s.Save()" >nul 2>&1
-echo   Fertig. Auf dem Desktop liegt jetzt eine Verknuepfung "Strava Dashboard".
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$w = New-Object -ComObject WScript.Shell; $s = $w.CreateShortcut([Environment]::GetFolderPath('Desktop') + '\Trainingsblick.lnk'); $s.TargetPath = '%~dp0.venv\Scripts\pythonw.exe'; $s.Arguments = '\"%~dp0trainingsblick.py\"'; $s.WorkingDirectory = '%~dp0'; $s.Description = 'Trainingsblick'; $s.Save()" >nul 2>&1
+echo   Fertig. Auf dem Desktop liegt jetzt eine Verknuepfung "Trainingsblick".
 echo.
 
 :starten
-start "" ".venv\Scripts\pythonw.exe" "%~dp0strava_dashboard.py" %*
+start "" ".venv\Scripts\pythonw.exe" "%~dp0trainingsblick.py" %*
 exit /b 0
 
 :python_fehlt
@@ -48,7 +48,7 @@ choice /c JN /m "  Soll Python jetzt automatisch installiert werden"
 if errorlevel 2 goto python_hand
 winget install -e --id Python.Python.3.13 --scope user --accept-package-agreements --accept-source-agreements
 echo.
-echo   Python ist installiert. Bitte dieses Fenster schliessen und "Strava Dashboard starten" noch einmal doppelklicken.
+echo   Python ist installiert. Bitte dieses Fenster schliessen und "Trainingsblick starten" noch einmal doppelklicken.
 echo.
 pause
 exit /b 1

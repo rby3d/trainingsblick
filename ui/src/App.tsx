@@ -196,7 +196,7 @@ export default function App() {
     <div className="app">
       {fehler && <div className="verbindung">{fehler}</div>}
       <nav className="nav" aria-label="Bereiche">
-        <div className="logo">Strava<small>{demo ? "Demo-Daten" : `${z ? nf(z.n) : "…"} Einheiten`}</small></div>
+        <div className="logo">Trainingsblick<small>{demo ? "Demo-Daten" : `${z ? nf(z.n) : "…"} Einheiten`}</small></div>
         {SEITEN.map(([k, name, unter, sy]) => (
           <button key={k} className="nb" aria-current={seite === k ? "page" : undefined} onClick={() => gehe(k)}>
             <Sym n={sy} /><span>{name}<small>{unter}</small></span>

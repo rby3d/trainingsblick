@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
 """
-Strava-Dashboard: Auswertung der eigenen Strava-Aktivitaeten (und optional Garmin-Koerperdaten) in einem Fenster,
+Trainingsblick: Auswertung der eigenen Strava-Aktivitaeten (und optional Garmin-Koerperdaten) in einem Fenster,
 dazu ein Share Studio fuer Bilder und Videos. Installation und Bedienung: README.md.
 
-Start:          Doppelklick auf "Strava Dashboard starten.cmd" (richtet beim ersten Mal alles ein)
-Ohne Fenster:   python strava_dashboard.py --kein-fenster [--demo] [--port N] [--token T]   (gibt nur die Adresse aus)
+Start:          Doppelklick auf "Trainingsblick starten.cmd" (richtet beim ersten Mal alles ein)
+Ohne Fenster:   python trainingsblick.py --kein-fenster [--demo] [--port N] [--token T]   (gibt nur die Adresse aus)
 --demo:         erfundene Trainingsdaten, kein Strava-Zugriff (zum Ausprobieren)
 
 Aufbau: Python startet einen lokalen Webserver (nur 127.0.0.1, mit Token) und oeffnet die Oberflaeche (web/index.html, gebaut
-aus ui/) als App-Fenster von Edge/Chrome. Einstellungen und Zwischenspeicher liegen in %APPDATA%\\StravaDashboard,
-die Zugangsdaten verschluesselt in %LOCALAPPDATA%\\StravaDashboard\\geheim (lib/orte.py), nie im Programmordner.
+aus ui/) als App-Fenster von Edge/Chrome. Einstellungen und Zwischenspeicher liegen in %APPDATA%\\Trainingsblick,
+die Zugangsdaten verschluesselt in %LOCALAPPDATA%\\Trainingsblick\\geheim (lib/orte.py), nie im Programmordner.
   lib/strava_api.py            Strava-Anmeldung und Abrufe
   lib/tresor.py                 Zugangsdaten (Strava, Garmin) verschluesselt per Windows-DPAPI
-  lib/strava_dashboard_logik.py Aktivitaeten holen und zwischenspeichern, Bestzeiten/Runden/Wetter im Hintergrund, Demo-Daten
+  lib/trainingsblick_logik.py Aktivitaeten holen und zwischenspeichern, Bestzeiten/Runden/Wetter im Hintergrund, Demo-Daten
   lib/garmin_logik.py           Garmin Connect (Abruf in lib/garmin_helfer.py mit dem Paket garminconnect)
   lib/ablage.py                 Speichern-Dialoge fuer Bilder und Videos (nur Ersatzweg; normal speichert die Seite selbst)
   lib/update.py, lib/version.py Versionsnummer und Hinweis auf neue Releases auf GitHub
   lib/webshell.py               Server, Fenster, Heartbeat
 Installer: installer/bauen.ps1 (eigenes Python + Inno Setup), Release per Git-Tag (.github/workflows/release.yml).
-Sounds fuer die Videos: Dateien <name>.mp3 in %APPDATA%\\StravaDashboard\\ton (optional); fehlen sie, erzeugt die Seite
+Sounds fuer die Videos: Dateien <name>.mp3 in %APPDATA%\\Trainingsblick\\ton (optional); fehlen sie, erzeugt die Seite
 die Effekte selbst. Musik gibt es nur als Datei (musik_lofi.mp3, musik_daytona.mp3).
 """
 from __future__ import annotations
@@ -36,7 +36,7 @@ import ablage  # noqa: E402
 import garmin_logik as gl  # noqa: E402
 import orte  # noqa: E402
 import strava_api as sl  # noqa: E402
-import strava_dashboard_logik as dl  # noqa: E402
+import trainingsblick_logik as dl  # noqa: E402
 import update  # noqa: E402
 import version  # noqa: E402
 import webshell  # noqa: E402
@@ -434,7 +434,7 @@ def aufrufe(s):
 def main(argv=None):
     args = list(sys.argv[1:] if argv is None else argv)
     s = Sitzung(demo="--demo" in args)
-    return webshell.starten(funktionen=aufrufe(s), ui_datei=UI_DATEI, titel="Strava-Dashboard", profil="StravaDashboard",
+    return webshell.starten(funktionen=aufrufe(s), ui_datei=UI_DATEI, titel="Trainingsblick", profil="Trainingsblick",
                             geo=s.cfg.get("fenster"), argv=args, beim_ende=s.ende, busy=lambda: 1 if s.sync["busy"] else 0,
                             min_groesse=(960, 620), standard=(1560, 960), anteil=(0.94, 0.92), maximiert=True, dateien=s.datei)
 
@@ -447,7 +447,7 @@ if __name__ == "__main__":
         try:
             pfad = orte.LOGS
             pfad.mkdir(parents=True, exist_ok=True)
-            (pfad / ("strava_dashboard_fehler_%s.txt" % time.strftime("%Y%m%d_%H%M%S"))).write_text(tb, encoding="utf-8")
+            (pfad / ("trainingsblick_fehler_%s.txt" % time.strftime("%Y%m%d_%H%M%S"))).write_text(tb, encoding="utf-8")
         except OSError:
             pass
         raise

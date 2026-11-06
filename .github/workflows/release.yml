@@ -54,15 +54,15 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: installer
-          path: installer/build/Strava-Dashboard-Setup-*.exe
+          path: installer/build/Trainingsblick-Setup-*.exe
 
       - name: Release anlegen
         if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v2
         with:
-          files: installer/build/Strava-Dashboard-Setup-*.exe
+          files: installer/build/Trainingsblick-Setup-*.exe
           body: |
-            **Installieren:** `Strava-Dashboard-Setup-…exe` unten herunterladen und doppelklicken.
+            **Installieren:** `Trainingsblick-Setup-…exe` unten herunterladen und doppelklicken.
             Warnt Windows („Der Computer wurde durch Windows geschützt“): auf „Weitere Informationen“ und dann „Trotzdem ausführen“ klicken.
 
             **Update:** einfach die neue Setup-Datei ausführen. Einstellungen, Daten und Zugänge bleiben erhalten.

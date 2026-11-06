@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Programmsymbol (strava_dashboard.ico) ohne Zusatzpakete zeichnen: orangefarbenes Quadrat mit runden Ecken und einer weissen
+Programmsymbol (trainingsblick.ico) ohne Zusatzpakete zeichnen: tuerkis-blaues Quadrat mit runden Ecken und einer weissen
 Streckenlinie. Jede Groesse wird einzeln gerechnet (Abstandsfelder, weiche Kanten) und als PNG in die ICO-Datei gelegt.
 
 Aufruf:  python installer/symbol.py <ziel.ico>     (macht installer/bauen.ps1)
@@ -13,7 +13,7 @@ import sys
 import zlib
 
 GROESSEN = (16, 24, 32, 48, 64, 128, 256)
-OBEN, UNTEN = (0xFF, 0x7A, 0x30), (0xFC, 0x4C, 0x02)
+OBEN, UNTEN = (0x22, 0xC3, 0xB4), (0x1F, 0x5F, 0xD6)     # Tuerkis nach Blau (bewusst nicht Strava-Orange)
 LINIE = ((0.20, 0.68), (0.37, 0.44), (0.50, 0.57), (0.65, 0.31), (0.81, 0.63))
 
 
