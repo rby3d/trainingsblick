@@ -9,6 +9,7 @@ import { DatumWahl } from "./datum";
 import { Einrichtung } from "./einrichtung";
 import { Sym, SportSym } from "./symbole";
 import { TippHost } from "./tipp";
+import { StravaLogo } from "./stravaLogo";
 import { Studio, StudioStart, TeilenSchnell } from "./studio/Studio";
 import { Uebersicht } from "./seiten/uebersicht";
 import { Aktivitaeten, Blick } from "./seiten/aktivitaeten";
@@ -215,6 +216,7 @@ export default function App() {
           <button className="btn" disabled={!z || z.sync.busy || !z.verbunden || demo} onClick={() => void aktion("aktualisieren")}><Sym n="sync" />{z?.sync.busy ? "Lädt …" : "Aktualisieren"}</button>
           <button className="btn ghost links" onClick={() => setDlg("einst")}><Sym n="zahnrad" />Einstellungen …</button>
           <button className="btn ghost links akzent" onClick={() => setDlg("einrichtung")}><Sym n="sterne" />Einrichtung …</button>
+          <StravaLogo className="nav-strava" />
         </div>
       </nav>
 

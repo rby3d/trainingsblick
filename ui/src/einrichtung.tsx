@@ -5,6 +5,7 @@ import { DatumWahl } from "./datum";
 import { Sym, SymFeld } from "./symbole";
 import { nf, Ev } from "./util";
 import { dateiWaehlen } from "./speichern";
+import { StravaLogo } from "./stravaLogo";
 import type { Aktion, Einst, Zustand } from "./seiten/ctx";
 
 const SCHRITTE: [string, string, string][] = [["kette", "Strava", "Aktivitäten"], ["uhrband", "Garmin", "optional"], ["flagge", "Ziel", "optional"], ["haken", "Fertig", "erster Abruf"]];
@@ -145,7 +146,7 @@ export function Einrichtung({ z, gz, einst, aktion, speichern, onClose }: {
         {verbunden ? (
           <>
             <div className="ob-status"><Sym n="haken" />Strava ist verbunden · {nf(z?.n ?? 0)} Einheiten</div>
-            <div className="ob-fuss"><span className="grow" /><button className="btn primary" onClick={() => setI(1)}>Weiter</button></div>
+            <div className="ob-fuss"><StravaLogo className="ob-strava" /><span className="grow" /><button className="btn primary" onClick={() => setI(1)}>Weiter</button></div>
           </>
         ) : (
           <>
@@ -154,6 +155,7 @@ export function Einrichtung({ z, gz, einst, aktion, speichern, onClose }: {
             {z?.verb.text && <div className={z.verb.text.startsWith("Fehler") ? "fehlbox" : "muted"}>{z.verb.text}</div>}
             <div className="ob-sicher"><Sym n="haken" />Client ID und Secret bleiben verschlüsselt auf deinem PC.</div>
             <div className="ob-fuss">
+              <StravaLogo className="ob-strava" />
               <span className="grow" />
               <button className="btn" onClick={() => setI(1)}>Später</button>
               <button className="btn primary" disabled={!z || z.verb.busy || !CID_OK.test(cid.trim()) || !SEC_OK.test(sec.trim())}

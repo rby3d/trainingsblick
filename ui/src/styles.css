@@ -350,6 +350,13 @@ tr.gewaehlt td { background: var(--sel); }
 .nb[aria-current=page] { background: var(--accent-soft); color: var(--accent); }
 .nb[aria-current=page] small { color: var(--accent); opacity: .75; }
 .nav-fuss { margin-top: auto; display: grid; gap: 4px; padding: 14px 0 0; border-top: 1px solid var(--line); }
+/* „Compatible with Strava“ (stravaLogo.tsx): Variante passend zum Farbschema, Höhe bestimmt die Größe */
+.strava-logo { display: inline-flex; align-items: center; flex: none; }
+.strava-logo img { display: block; height: 100%; width: auto; }
+.strava-logo .dunkel { display: none; }
+@media (prefers-color-scheme: dark) { .strava-logo .hell { display: none; } .strava-logo .dunkel { display: block; } }
+.nav-strava { height: 13px; margin: 10px 8px 0; }
+.ob-strava { height: 13px; }
 .nav-update { display: flex; gap: 10px; align-items: center; text-align: left; padding: 9px 10px; margin-bottom: 6px; border-radius: 10px; border: 1px solid var(--accent);
   background: var(--accent-soft); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 .nav-update small { display: block; font-weight: 400; color: var(--muted); font-size: 11.5px; }
@@ -641,6 +648,7 @@ tr.gewaehlt td { background: var(--sel); }
   .nav-fuss .btn .sym { width: 18px; height: 18px; }
   .nav-update { margin: 0; padding: 7px 8px; }
   .nav-update span { display: none; }
+  .nav-strava { display: none; }
   .main { padding: 18px 16px 40px; }
   .raster { gap: 16px; }
   .raster > .s3, .raster > .s4, .raster > .s5, .raster > .s6 { grid-column: span 12; }
