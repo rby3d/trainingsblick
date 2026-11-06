@@ -6,9 +6,6 @@ Die Zugangsdaten (Client ID, Client Secret, Tokens) liegen verschluesselt im Tre
 den PC nie.
 Anmeldung: Strava leitet nach der Bestaetigung auf http://localhost:8123/callback zurueck; deshalb muss in der eigenen
 Strava-API-App als "Authorization Callback Domain" localhost eingetragen sein.
-
-Optional "formkurve_url" im Tresor-Eintrag: dann holt das Dashboard den Access-Token von einem Formkurve-Server, der den Zugang
-verwaltet (sonst erneuern zwei Programme denselben Refresh-Token und machen sich gegenseitig ungueltig). Fuer alle anderen leer.
 """
 from __future__ import annotations
 
@@ -39,9 +36,9 @@ def _alt_lesen(text):
 
 
 def load_config():
-    cfg = {"client_id": "", "client_secret": "", "refresh_token": "", "access_token": "", "expires_at": 0, "formkurve_url": ""}
+    cfg = {"client_id": "", "client_secret": "", "refresh_token": "", "access_token": "", "expires_at": 0}
     tresor.uebernehmen("strava", ALT_KLARTEXT, _alt_lesen)
-    cfg.update(tresor.lesen("strava") or {})
+    cfg.update({k: v for k, v in (tresor.lesen("strava") or {}).items() if k in cfg})     # unbekannte alte Felder fallen weg
     return cfg
 
 
@@ -79,24 +76,8 @@ def store_tokens(cfg, tok):
     save_config(cfg)
 
 
-def _token_von_formkurve(cfg):
-    url = (cfg.get("formkurve_url") or "").strip()
-    if not url:
-        return None
-    try:
-        with urllib.request.urlopen(url.rstrip("/") + "/api/strava/zugriff", timeout=6) as r:
-            j = json.loads(r.read().decode("utf-8"))
-        return j if j.get("access_token") else None
-    except Exception:       # noqa: BLE001
-        return None
-
-
 def get_access_token(cfg):
     if cfg.get("access_token") and cfg.get("expires_at", 0) > time.time() + 60:
-        return cfg["access_token"]
-    j = _token_von_formkurve(cfg)
-    if j:
-        cfg["access_token"], cfg["expires_at"] = j["access_token"], int(j.get("expires_at") or 0)
         return cfg["access_token"]
     if not (cfg.get("client_id") and cfg.get("client_secret") and cfg.get("refresh_token")):
         raise StravaError("Strava ist noch nicht verbunden.")
