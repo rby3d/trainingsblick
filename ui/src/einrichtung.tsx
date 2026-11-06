@@ -120,6 +120,8 @@ export function Einrichtung({ z, gz, einst, aktion, speichern, onClose }: {
   const [evDatum, setEvDatum] = useState(haupt?.datum ?? "");
   const [wz, setWz] = useState(einst?.wochenziel ? String(einst.wochenziel).replace(".", ",") : "");
   const verbunden = !!z?.verbunden;
+  const [andereApp, setAndereApp] = useState(false);
+  const eingegeben = CID_OK.test(cid.trim()) && SEC_OK.test(sec.trim());
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); onClose(); } };
@@ -150,16 +152,30 @@ export function Einrichtung({ z, gz, einst, aktion, speichern, onClose }: {
           </>
         ) : (
           <>
-            <p>Strava gibt deine Aktivitäten nur an Programme heraus, die du selbst bei Strava anmeldest. Das ist kostenlos und dauert etwa drei Minuten.</p>
-            <StravaAnleitung cid={cid} setCid={setCid} sec={sec} setSec={setSec} aktion={aktion} />
+            {z?.app && !andereApp ? (
+              // Client ID und Secret liegen schon im Tresor (z. B. übernommen): nur noch im Browser bestätigen
+              <div className="ob-karte">
+                <Sym n="haken" />
+                <div className="grow">
+                  <b>Deine Strava-App ist schon eingetragen</b>
+                  <small>Klick auf „Mit Strava verbinden …“ und bestätige im Browser. {" "}
+                    <button className="btn-link" onClick={() => setAndereApp(true)}>Andere App eintragen …</button></small>
+                </div>
+              </div>
+            ) : (
+              <>
+                <p>Strava gibt deine Aktivitäten nur an Programme heraus, die du selbst bei Strava anmeldest. Das ist kostenlos und dauert etwa drei Minuten.</p>
+                <StravaAnleitung cid={cid} setCid={setCid} sec={sec} setSec={setSec} aktion={aktion} />
+              </>
+            )}
             {z?.verb.text && <div className={z.verb.text.startsWith("Fehler") ? "fehlbox" : "muted"}>{z.verb.text}</div>}
             <div className="ob-sicher"><Sym n="haken" />Client ID und Secret bleiben verschlüsselt auf deinem PC.</div>
             <div className="ob-fuss">
               <StravaLogo className="ob-strava" />
               <span className="grow" />
               <button className="btn" onClick={() => setI(1)}>Später</button>
-              <button className="btn primary" disabled={!z || z.verb.busy || !CID_OK.test(cid.trim()) || !SEC_OK.test(sec.trim())}
-                onClick={() => void aktion("verbinden", { client_id: cid.trim(), client_secret: sec.trim() })}>
+              <button className="btn primary" disabled={!z || z.verb.busy || !(eingegeben || (z.app && !andereApp))}
+                onClick={() => void aktion("verbinden", eingegeben ? { client_id: cid.trim(), client_secret: sec.trim() } : {})}>
                 {z?.verb.busy ? "Warte auf Strava …" : "Mit Strava verbinden …"}
               </button>
             </div>

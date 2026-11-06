@@ -163,7 +163,7 @@ class Sitzung:
 
     def zustand(self, _d=None):
         with self.lock:
-            return {"ver": self.ver, "ver2": self.ver2, "sync": dict(self.sync), "verb": dict(self.verb), "verbunden": self.verbunden(),
+            return {"ver": self.ver, "ver2": self.ver2, "sync": dict(self.sync), "verb": dict(self.verb), "verbunden": self.verbunden(), "app": bool(self.strava and self.strava.get("client_id") and self.strava.get("client_secret")),
                     "n": len(self.speicher.akt), "jetzt": time.time(), "neben": self.status, "garmin": self.garmin.zustand(),
                     "version": version.VERSION, "update": self.update}
 
